@@ -10,6 +10,7 @@ async function bootstrap() {
   const loggerMiddleware = new LoggerMiddleware();
   app.use(loggerMiddleware.use.bind(loggerMiddleware));
 
+  // Otra versión:
   // app.use((req, res, next) => new LoggerMiddleware().use(req, res, next));
 
   await app.listen(process.env.PORT ?? 3000);
