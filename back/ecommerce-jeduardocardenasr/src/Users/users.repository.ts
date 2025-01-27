@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/interfaces/users.interface';
+import { User } from './users.entity';
 
 @Injectable()
 export class UsersRepository {
@@ -9,7 +9,7 @@ export class UsersRepository {
       email: 'edu@mail.com',
       name: 'Edu',
       password: '123456789',
-      address: 'Siempre Viva 123',
+      address: 'Avenida Siempre Viva 123',
       phone: '8442202020',
       country: 'México',
       city: 'Saltio',
@@ -19,7 +19,7 @@ export class UsersRepository {
       email: 'leo@mail.com',
       name: 'Leo',
       password: '123456789',
-      address: 'Siempre Viva 123',
+      address: 'Avenida Siempre Viva 123',
       phone: '8442202020',
       country: 'México',
       city: 'Saltio',
@@ -29,7 +29,7 @@ export class UsersRepository {
       email: 'deivid@mail.com',
       name: 'Deivid',
       password: '123456789',
-      address: 'Siempre Viva 123',
+      address: 'Avenida Siempre Viva 123',
       phone: '8442202020',
       country: 'México',
       city: 'Saltio',

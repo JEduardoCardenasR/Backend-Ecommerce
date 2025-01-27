@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Products } from 'src/interfaces/products.interface';
+import { Product } from './products.entity';
 
 @Injectable()
 export class ProductsRepository {
-  private products: Products[] = [
+  private products: Product[] = [
     {
       id: 1,
       name: 'Pan',
-      description: 'Pan',
+      description: 'Pan bueno',
       price: 123,
       stock: true,
       imgUrl: 'string',
@@ -15,7 +15,7 @@ export class ProductsRepository {
     {
       id: 2,
       name: 'Cake',
-      description: 'Cake',
+      description: 'Cake bueno',
       price: 123,
       stock: true,
       imgUrl: 'string',
@@ -23,14 +23,14 @@ export class ProductsRepository {
     {
       id: 3,
       name: 'Donut',
-      description: 'Donut',
+      description: 'Donut bueno',
       price: 123,
       stock: true,
       imgUrl: 'string',
     },
   ];
 
-  getProducts(): Products[] {
+  getProducts(): Product[] {
     return this.products;
   }
 }
