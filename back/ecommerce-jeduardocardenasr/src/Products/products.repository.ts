@@ -33,4 +33,32 @@ export class ProductsRepository {
   getProducts(): Product[] {
     return this.products;
   }
+
+  getProductById(id: string): Product {
+    return this.products.find((product) => product.id === Number(id));
+  }
+
+  createProduct(newProduct: Omit<Product, 'id'>): Product {
+    const id = this.products.length + 1;
+    this.products.push({ id, ...newProduct });
+    return { id, ...newProduct };
+  }
+
+  updateProduct(id: string, updatedProduct: Partial<Product>): Product {
+    const index = this.products.findIndex(
+      (product) => product.id === Number(id),
+    );
+    const { id: _, ...filterData } = updatedProduct;
+    this.products[index] = { ...this.products[index], ...filterData };
+    return this.products[index];
+  }
+
+  deleteProduct(id: string): Product {
+    const index = this.products.findIndex(
+      (product) => product.id === Number(id),
+    );
+    const deletedProduct = this.products[index];
+    this.products.splice(index, 1);
+    return deletedProduct;
+  }
 }
