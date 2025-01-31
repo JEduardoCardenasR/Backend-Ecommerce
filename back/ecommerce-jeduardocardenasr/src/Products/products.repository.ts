@@ -28,10 +28,46 @@ export class ProductsRepository {
       stock: true,
       imgUrl: 'string',
     },
+    {
+      id: 4,
+      name: 'Churro',
+      description: 'Churro bueno',
+      price: 123,
+      stock: true,
+      imgUrl: 'string',
+    },
+    {
+      id: 5,
+      name: 'Cookie',
+      description: 'Cookie bueno',
+      price: 123,
+      stock: true,
+      imgUrl: 'string',
+    },
+    {
+      id: 6,
+      name: 'Concha',
+      description: 'Concha bueno',
+      price: 123,
+      stock: true,
+      imgUrl: 'string',
+    },
   ];
 
-  getProducts(): Product[] {
-    return this.products;
+  getProducts(
+    page: number,
+    limit: number,
+  ): { products: Product[]; totalPages: number; totalProducts: number } {
+    const totalProducts = this.products.length;
+    const totalPages = Math.ceil(totalProducts / limit);
+    const start = (page - 1) * limit;
+    const end = start + limit;
+
+    return {
+      products: this.products.slice(start, end), // Solo devuelve los productos de la página
+      totalProducts,
+      totalPages,
+    };
   }
 
   getProductById(id: string): Product {
@@ -48,6 +84,7 @@ export class ProductsRepository {
     const index = this.products.findIndex(
       (product) => product.id === Number(id),
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...filterData } = updatedProduct;
     this.products[index] = { ...this.products[index], ...filterData };
     return this.products[index];

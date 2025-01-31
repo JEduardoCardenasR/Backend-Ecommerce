@@ -1,15 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
-import { Products } from 'src/interfaces/products.interface';
 import { Product } from './products.entity';
-import { filter } from 'rxjs';
 
 @Injectable()
 export class ProductsService {
   constructor(private readonly productsRepository: ProductsRepository) {}
 
-  getProductsService(): Products[] {
-    return this.productsRepository.getProducts();
+  getProductsService(
+    page: number,
+    limit: number,
+  ): { products: Product[]; totalPages: number; totalProducts: number } {
+    return this.productsRepository.getProducts(page, limit);
   }
 
   getProductByIdService(id: string): Product {
@@ -17,6 +18,7 @@ export class ProductsService {
   }
 
   createProductService(newProduct: Product): Product {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...filteredData } = newProduct; //Eliminamos el id
     return this.productsRepository.createProduct(filteredData);
   }

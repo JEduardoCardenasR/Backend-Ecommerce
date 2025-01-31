@@ -6,8 +6,11 @@ import { User } from './users.entity';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  getUsersService(): User[] {
-    return this.usersRepository.getUsers();
+  getUsersService(
+    page: number,
+    limit: number,
+  ): { users: User[]; totalPages: number; totalUsers: number } {
+    return this.usersRepository.getUsers(page, limit);
   }
 
   getUserByIdService(id: string): User {
@@ -15,7 +18,8 @@ export class UsersService {
   }
 
   createUserService(newUser: User): User {
-    const { id, ...filteredData } = newUser; //Eliminamos el id
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...filteredData } = newUser; //Eliminamos el id por si la solicitud la trae
     return this.usersRepository.createUser(filteredData);
   }
 
