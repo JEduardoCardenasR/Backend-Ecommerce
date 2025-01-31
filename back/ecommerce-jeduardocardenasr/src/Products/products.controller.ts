@@ -12,6 +12,7 @@ import {
 import { ProductsService } from './products.service';
 import { Product } from './products.entity';
 import { AuthGuard } from 'src/Auth/auth-guard.guard';
+import { validateProduct } from 'src/utils/products.validate';
 
 @Controller('products')
 export class ProductsController {
@@ -35,8 +36,11 @@ export class ProductsController {
 
   @Post()
   @UseGuards(AuthGuard)
-  createProductController(@Body() newProduct: Product): Product {
-    return this.productsService.createProductService(newProduct);
+  createProductController(@Body() newProduct: Product): Product | string {
+    if (validateProduct(newProduct)) {
+      return this.productsService.createProductService(newProduct);
+    }
+    return 'Producto no válido';
   }
 
   @Put(':id')
@@ -44,8 +48,11 @@ export class ProductsController {
   updateProductController(
     @Param('id') id: string,
     @Body() updatedProduct: Partial<Product>,
-  ): Product {
-    return this.productsService.updateProductService(id, updatedProduct);
+  ): Product | string {
+    if (validateProduct(updatedProduct)) {
+      return this.productsService.updateProductService(id, updatedProduct);
+    }
+    return 'Producto no válido';
   }
 
   @Delete(':id')

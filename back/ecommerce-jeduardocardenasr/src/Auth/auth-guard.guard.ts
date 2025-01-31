@@ -1,15 +1,22 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 function validate(request) {
   const authHeader = request.headers.authorization;
 
-  if (!authHeader) return false;
+  // if (!authHeader) return false;
+
+  if (!authHeader) {
+    throw new UnauthorizedException('¡El header de autorización no existe!');
+  }
 
   const [email, password] = authHeader.split(':');
 
-  if (!email || !password) return false;
+  // if (!email || !password) return false;
 
+  if (!email || !password) {
+    throw new UnauthorizedException('¡Credenciales inválidas!');
+  }
   return true;
 }
 

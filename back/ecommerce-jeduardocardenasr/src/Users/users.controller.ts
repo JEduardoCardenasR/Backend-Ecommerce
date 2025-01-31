@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  // HttpCode,
+  // HttpStatus,
   Param,
   Post,
   Put,
@@ -14,6 +16,7 @@ import { UsersService } from './users.service';
 import { User } from './users.entity';
 import { ExcludePasswordInterceptor } from 'src/interceptors/exclude-password.interceptor';
 import { AuthGuard } from 'src/Auth/auth-guard.guard';
+import { validateUser } from 'src/utils/users.validate';
 
 @Controller('users')
 @UseInterceptors(ExcludePasswordInterceptor) //Interceptor para no mostrar password
@@ -21,6 +24,7 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
+  // @HttpCode(HttpStatus.OK) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
   @UseGuards(AuthGuard)
   getUsersController(
     @Query('page') page?: string,
@@ -39,8 +43,12 @@ export class UsersController {
   }
 
   @Post()
-  createUserController(@Body() newUser: User): User {
-    return this.userService.createUserService(newUser);
+  // @HttpCode(HttpStatus.CREATED) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
+  createUserController(@Body() newUser: User): User | string {
+    if (validateUser(newUser)) {
+      return this.userService.createUserService(newUser);
+    }
+    return 'Usuario no válido';
   }
 
   @Put(':id')
@@ -48,8 +56,11 @@ export class UsersController {
   updateUserController(
     @Param('id') id: string,
     @Body() updatedData: Partial<User>,
-  ): User {
-    return this.userService.updateUserService(id, updatedData);
+  ): User | string {
+    if (validateUser(updatedData)) {
+      return this.userService.updateUserService(id, updatedData);
+    }
+    return 'Usuario no válido';
   }
 
   @Delete(':id')
