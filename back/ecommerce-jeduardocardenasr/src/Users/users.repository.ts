@@ -1,75 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './users.entity';
+import { Users } from 'src/entities/users.entity';
 
 @Injectable()
 export class UsersRepository {
-  private users: User[] = [
-    {
-      id: 1,
-      email: 'edu@mail.com',
-      name: 'Edu',
-      password: '123456789',
-      address: 'Avenida Siempre Viva 123',
-      phone: '8442202020',
-      country: 'México',
-      city: 'Saltio',
-    },
-    {
-      id: 2,
-      email: 'leo@mail.com',
-      name: 'Leo',
-      password: '123456789',
-      address: 'Avenida Siempre Viva 123',
-      phone: '8442202020',
-      country: 'México',
-      city: 'Saltio',
-    },
-    {
-      id: 3,
-      email: 'deivid@mail.com',
-      name: 'Deivid',
-      password: '123456789',
-      address: 'Avenida Siempre Viva 123',
-      phone: '8442202020',
-      country: 'México',
-      city: 'Saltio',
-    },
-    {
-      id: 4,
-      email: 'cuatro@mail.com',
-      name: 'Cuatro',
-      password: '123456789',
-      address: 'Avenida Siempre Viva 123',
-      phone: '8442202020',
-      country: 'México',
-      city: 'Saltio',
-    },
-    {
-      id: 5,
-      email: 'cinco@mail.com',
-      name: 'Cinco',
-      password: '123456789',
-      address: 'Avenida Siempre Viva 123',
-      phone: '8442202020',
-      country: 'México',
-      city: 'Saltio',
-    },
-    {
-      id: 6,
-      email: 'seis@mail.com',
-      name: 'Seis',
-      password: '123456789',
-      address: 'Avenida Siempre Viva 123',
-      phone: '8442202020',
-      country: 'México',
-      city: 'Saltio',
-    },
-  ];
+  private users: Users[] = [];
 
   getUsers(
     page: number,
     limit: number,
-  ): { users: User[]; totalPages: number; totalUsers: number } {
+  ): { users: Users[]; totalPages: number; totalUsers: number } {
     const totalUsers = this.users.length; //Esto es para que devuelva el total de usuarios
     const totalPages = Math.ceil(totalUsers / limit); //Esto es para que devuelva el total de páginas
     const start = (page - 1) * limit;
@@ -86,18 +25,19 @@ export class UsersRepository {
     // return users;
   }
 
-  getUserById(id: string): User {
-    return this.users.find((user) => user.id === Number(id)); // O puedes usar +id
+  getUserById(id: string): Users {
+    return this.users.find((user) => user.id === id); // O puedes usar +id
   }
 
-  createUser(newUser: Omit<User, 'id'>): User {
-    const id = this.users.length + 1;
+  createUser(newUser: Omit<Users, 'id'>): Users {
+    const idNumber = this.users.length + 1;
+    const id = idNumber.toString();
     this.users.push({ id, ...newUser });
     return { id, ...newUser };
   }
 
-  updateUser(id: string, updatedData: Partial<User>): User {
-    const index = this.users.findIndex((user) => user.id === Number(id));
+  updateUser(id: string, updatedData: Partial<Users>): Users {
+    const index = this.users.findIndex((user) => user.id === id);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id: _, ...filteredData } = updatedData; //Renombra id como _ Es útil para evitar que un id enviado en una solicitud sobrescriba el real.
     this.users[index] = { ...this.users[index], ...filteredData };
@@ -113,8 +53,8 @@ export class UsersRepository {
   //   return userWithoutPassword;
   // }
 
-  deleteUser(id: string): User {
-    const index = this.users.findIndex((user) => user.id === Number(id));
+  deleteUser(id: string): Users {
+    const index = this.users.findIndex((user) => user.id === id);
     const deletedUser = this.users[index];
     this.users.splice(index, 1); // Eliminar usuario del array
     return deletedUser;
@@ -122,8 +62,8 @@ export class UsersRepository {
 
   // Opción que crea un nuevo array
   // deleteUser(id: string): User {
-  //   const user = this.users.find((user) => user.id === Number(id));
-  //   this.users = this.users.filter((user) => user.id !== Number(id)); //Crea un nuevo array con los elementos que no se van a eliminar
+  //   const user = this.users.find((user) => user.id === id);
+  //   this.users = this.users.filter((user) => user.id !== id); //Crea un nuevo array con los elementos que no se van a eliminar
   //   const { password, ...userWithoutPassword } = user; // Opción para filtrar el password sin interceptor (pero tendría que ponerse en todos los métodos)
   //   return userWithoutPassword;
   // }

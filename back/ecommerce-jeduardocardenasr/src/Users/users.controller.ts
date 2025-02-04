@@ -13,10 +13,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './users.entity';
 import { ExcludePasswordInterceptor } from 'src/interceptors/exclude-password.interceptor';
 import { AuthGuard } from 'src/Auth/auth-guard.guard';
 import { validateUser } from 'src/utils/users.validate';
+import { Users } from 'src/entities/users.entity';
 
 @Controller('users')
 @UseInterceptors(ExcludePasswordInterceptor) //Interceptor para no mostrar password
@@ -29,7 +29,7 @@ export class UsersController {
   getUsersController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ): { users: User[]; totalPages: number; totalUsers: number } {
+  ): { users: Users[]; totalPages: number; totalUsers: number } {
     const pageNumber = page ? Number(page) : 1;
     const limitNumber = limit ? Number(limit) : 5;
 
@@ -38,13 +38,13 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  getUserByIdController(@Param('id') id: string): User {
+  getUserByIdController(@Param('id') id: string): Users {
     return this.userService.getUserByIdService(id);
   }
 
   @Post()
   // @HttpCode(HttpStatus.CREATED) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
-  createUserController(@Body() newUser: User): User | string {
+  createUserController(@Body() newUser: Users): Users | string {
     if (validateUser(newUser)) {
       return this.userService.createUserService(newUser);
     }
@@ -55,8 +55,8 @@ export class UsersController {
   @UseGuards(AuthGuard)
   updateUserController(
     @Param('id') id: string,
-    @Body() updatedData: Partial<User>,
-  ): User | string {
+    @Body() updatedData: Partial<Users>,
+  ): Users | string {
     if (validateUser(updatedData)) {
       return this.userService.updateUserService(id, updatedData);
     }
@@ -65,7 +65,7 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  deleteUserController(@Param('id') id: string): User {
+  deleteUserController(@Param('id') id: string): Users {
     return this.userService.deleteUserService(id);
   }
 }

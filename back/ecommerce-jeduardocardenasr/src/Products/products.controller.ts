@@ -10,9 +10,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { Product } from './products.entity';
 import { AuthGuard } from 'src/Auth/auth-guard.guard';
 import { validateProduct } from 'src/utils/products.validate';
+import { Products } from 'src/entities/products.entity';
 
 @Controller('products')
 export class ProductsController {
@@ -22,7 +22,7 @@ export class ProductsController {
   getProductsController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ): { products: Product[]; totalPages: number; totalProducts: number } {
+  ): { products: Products[]; totalPages: number; totalProducts: number } {
     const pageNumber = page ? Number(page) : 1;
     const limitNumber = limit ? Number(limit) : 5;
 
@@ -30,13 +30,13 @@ export class ProductsController {
   }
 
   @Get(':id')
-  getProductByIdController(@Param('id') id: string): Product {
+  getProductByIdController(@Param('id') id: string): Products {
     return this.productsService.getProductByIdService(id);
   }
 
   @Post()
   @UseGuards(AuthGuard)
-  createProductController(@Body() newProduct: Product): Product | string {
+  createProductController(@Body() newProduct: Products): Products | string {
     if (validateProduct(newProduct)) {
       return this.productsService.createProductService(newProduct);
     }
@@ -47,8 +47,8 @@ export class ProductsController {
   @UseGuards(AuthGuard)
   updateProductController(
     @Param('id') id: string,
-    @Body() updatedProduct: Partial<Product>,
-  ): Product | string {
+    @Body() updatedProduct: Partial<Products>,
+  ): Products | string {
     if (validateProduct(updatedProduct)) {
       return this.productsService.updateProductService(id, updatedProduct);
     }
@@ -57,7 +57,7 @@ export class ProductsController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  deleteProductController(@Param('id') id: string): Product {
+  deleteProductController(@Param('id') id: string): Products {
     return this.productsService.deleteProductService(id);
   }
 }
