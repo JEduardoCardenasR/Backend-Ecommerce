@@ -6,6 +6,7 @@ export const data = [
     price: 199.99,
     stock: 12,
     category: 'smartphone',
+    imgUrl: 'text',
   },
   {
     name: 'Samsung Galaxy S23',
@@ -13,6 +14,7 @@ export const data = [
     price: 150.0,
     stock: 12,
     category: 'smartphone',
+    imgUrl: 'text',
   },
   {
     name: 'Motorola Edge 40',
@@ -20,6 +22,7 @@ export const data = [
     price: 179.89,
     stock: 12,
     category: 'smartphone',
+    imgUrl: 'text',
   },
   {
     name: 'Samsung Odyssey G9',
@@ -27,6 +30,7 @@ export const data = [
     price: 299.99,
     stock: 12,
     category: 'monitor',
+    imgUrl: 'text',
   },
   {
     name: 'LG UltraGear',
@@ -34,6 +38,7 @@ export const data = [
     price: 199.99,
     stock: 12,
     category: 'monitor',
+    imgUrl: 'text',
   },
   {
     name: 'Acer Predator',
@@ -41,6 +46,7 @@ export const data = [
     price: 150.0,
     stock: 12,
     category: 'monitor',
+    imgUrl: 'text',
   },
   {
     name: 'Razer BlackWidow V3',
@@ -48,6 +54,7 @@ export const data = [
     price: 99.99,
     stock: 12,
     category: 'keyboard',
+    imgUrl: 'text',
   },
   {
     name: 'Corsair K70',
@@ -55,6 +62,7 @@ export const data = [
     price: 79.99,
     stock: 12,
     category: 'keyboard',
+    imgUrl: 'text',
   },
   {
     name: 'Logitech G Pro',
@@ -62,6 +70,7 @@ export const data = [
     price: 59.99,
     stock: 12,
     category: 'keyboard',
+    imgUrl: 'text',
   },
   {
     name: 'Razer Viper',
@@ -69,6 +78,7 @@ export const data = [
     price: 49.99,
     stock: 12,
     category: 'mouse',
+    imgUrl: 'text',
   },
   {
     name: 'Logitech G502 Pro',
@@ -76,6 +86,7 @@ export const data = [
     price: 39.99,
     stock: 12,
     category: 'mouse',
+    imgUrl: 'text',
   },
   {
     name: 'SteelSeries Rival 3',
@@ -83,5 +94,22 @@ export const data = [
     price: 29.99,
     stock: 12,
     category: 'mouse',
+    imgUrl: 'text',
   },
-]
+  // {
+  //   name: 'Lentes con protección de luz azul',
+  //   description: 'Cuidan tu vista de las pantallas',
+  //   price: 19.99,
+  //   stock: 10,
+  //   category: 'glasses',
+  //   imgUrl: 'text',
+  // },
+  // {
+  //   name: 'Audífonos con protección para oídos',
+  //   description: 'Cuidan tus oídos del ruido',
+  //   price: 12.99,
+  //   stock: 10,
+  //   category: 'headphones',
+  //   imgUrl: 'text',
+  // },
+];

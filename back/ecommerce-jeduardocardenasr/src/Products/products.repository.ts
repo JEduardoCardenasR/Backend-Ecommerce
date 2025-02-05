@@ -1,49 +1,100 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Categories } from 'src/entities/categories.entity';
 import { Products } from 'src/entities/products.entity';
+import { data } from 'src/utils/Archivo_actividad_3';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsRepository {
-  private products: Products[] = [];
+  constructor(
+    @InjectRepository(Products)
+    private productsRepository: Repository<Products>,
+    @InjectRepository(Categories)
+    private categoriesRepository: Repository<Categories>,
+  ) {}
 
-  getProducts(
+  async getProducts(
     page: number,
     limit: number,
-  ): { products: Products[]; totalPages: number; totalProducts: number } {
-    const totalProducts = this.products.length;
+  ): Promise<{
+    products: Products[];
+    totalPages: number;
+    totalProducts: number;
+  }> {
+    const products = await this.productsRepository.find({
+      relations: {
+        category: true,
+      },
+    });
+
+    const totalProducts = products.length;
     const totalPages = Math.ceil(totalProducts / limit);
     const start = (page - 1) * limit;
     const end = start + limit;
 
     return {
-      products: this.products.slice(start, end), // Solo devuelve los productos de la página
+      products: products.slice(start, end), // Solo devuelve los productos de la página
       totalProducts,
       totalPages,
     };
   }
 
-  getProductById(id: string): Products {
-    return this.products.find((product) => product.id === id);
+  async getProductById(id: string): Promise<Products> {
+    const product = await this.productsRepository.findOneBy({ id });
+    if (!product) {
+      throw new NotFoundException(`Producto con id ${id} no enconrado`);
+    }
+    return product;
   }
 
-  createProduct(newProduct: Omit<Products, 'id'>): Products {
-    const idNumber = this.products.length + 1;
-    const id = idNumber.toString();
-    this.products.push({ id, ...newProduct });
-    return { id, ...newProduct };
+  async updateProduct(
+    id: string,
+    product: Partial<Products>,
+  ): Promise<Products> {
+    await this.productsRepository.update(id, product);
+    const updatedProduct = await this.productsRepository.findOneBy({ id });
+    return updatedProduct;
   }
 
-  updateProduct(id: string, updatedProduct: Partial<Products>): Products {
-    const index = this.products.findIndex((product) => product.id === id);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id: _, ...filterData } = updatedProduct;
-    this.products[index] = { ...this.products[index], ...filterData };
-    return this.products[index];
+  async addProduct() {
+    const categories = await this.categoriesRepository.find();
+
+    data?.map(async (element) => {
+      const category = categories.find(
+        (category) => category.name === element.category,
+      );
+      const product = new Products();
+
+      product.name = element.name;
+      product.description = element.description;
+      product.price = element.price;
+      product.imgUrl = element.imgUrl;
+      product.stock = element.stock;
+      product.category = category;
+
+      await this.productsRepository
+        .createQueryBuilder()
+        .insert()
+        .into(Products)
+        .values(product)
+        .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name'])
+        .execute();
+    });
+    return 'Productos agregados';
   }
 
-  deleteProduct(id: string): Products {
-    const index = this.products.findIndex((product) => product.id === id);
-    const deletedProduct = this.products[index];
-    this.products.splice(index, 1);
-    return deletedProduct;
-  }
+  // createProduct(newProduct: Omit<Products, 'id'>): Products {
+  //   const idNumber = this.products.length + 1;
+  //   const id = idNumber.toString();
+  //   this.products.push({ id, ...newProduct });
+  //   return { id, ...newProduct };
+  // }
+  
+  // deleteProduct(id: string): Products {
+  //   const index = this.products.findIndex((product) => product.id === id);
+  //   const deletedProduct = this.products[index];
+  //   this.products.splice(index, 1);
+  //   return deletedProduct;
+  // }
 }

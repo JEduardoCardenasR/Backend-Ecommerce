@@ -1,10 +1,11 @@
 import {
+  BadRequestException,
   Body,
   Controller,
-  Delete,
+  // Delete,
   Get,
   Param,
-  Post,
+  // Post,
   Put,
   Query,
   UseGuards,
@@ -19,45 +20,57 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  getProductsController(
+  async getProductsController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ): { products: Products[]; totalPages: number; totalProducts: number } {
+  ): Promise<{
+    products: Products[];
+    totalPages: number;
+    totalProducts: number;
+  }> {
     const pageNumber = page ? Number(page) : 1;
     const limitNumber = limit ? Number(limit) : 5;
 
-    return this.productsService.getProductsService(pageNumber, limitNumber);
+    return await this.productsService.getProductsService(
+      pageNumber,
+      limitNumber,
+    );
+  }
+
+  @Get('seeder')
+  addProductsController() {
+    return this.productsService.addProductsService();
   }
 
   @Get(':id')
-  getProductByIdController(@Param('id') id: string): Products {
-    return this.productsService.getProductByIdService(id);
-  }
-
-  @Post()
-  @UseGuards(AuthGuard)
-  createProductController(@Body() newProduct: Products): Products | string {
-    if (validateProduct(newProduct)) {
-      return this.productsService.createProductService(newProduct);
-    }
-    return 'Producto no válido';
+  async getProductByIdController(@Param('id') id: string): Promise<Products> {
+    return await this.productsService.getProductByIdService(id);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
-  updateProductController(
+  async updateProductController(
     @Param('id') id: string,
     @Body() updatedProduct: Partial<Products>,
-  ): Products | string {
-    if (validateProduct(updatedProduct)) {
-      return this.productsService.updateProductService(id, updatedProduct);
+  ): Promise<Products> {
+    if (!validateProduct(updatedProduct)) {
+      throw new BadRequestException('Producto no válido');
     }
-    return 'Producto no válido';
+    return await this.productsService.updateProductService(id, updatedProduct);
   }
 
-  @Delete(':id')
-  @UseGuards(AuthGuard)
-  deleteProductController(@Param('id') id: string): Products {
-    return this.productsService.deleteProductService(id);
-  }
+  // @Post()
+  // @UseGuards(AuthGuard)
+  // createProductController(@Body() newProduct: Products): Products | string {
+  //   if (validateProduct(newProduct)) {
+  //     return this.productsService.createProductService(newProduct);
+  //   }
+  //   return 'Producto no válido';
+  // }
+
+  // @Delete(':id')
+  // @UseGuards(AuthGuard)
+  // deleteProductController(@Param('id') id: string): Products {
+  //   return this.productsService.deleteProductService(id);
+  // }
 }
