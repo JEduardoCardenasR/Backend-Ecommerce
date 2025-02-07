@@ -37,7 +37,7 @@ export class Users {
   password: string;
 
   @Column({
-    type: 'int',
+    type: 'bigint',
   })
   phone: number;
 

@@ -49,10 +49,10 @@ export class OrdersRepository {
         //Actualizamos el stock
         await this.productsRepository.update(
           { id: element.id },
-          { stock: products.stock - 1 },
+          { stock: product.stock - 1 },
         );
 
-        return products;
+        return product;
       }),
     );
 
@@ -84,7 +84,7 @@ export class OrdersRepository {
       },
     });
 
-    if (order) {
+    if (!order) {
       return `Orden con id ${id} no encontrada`;
     }
 

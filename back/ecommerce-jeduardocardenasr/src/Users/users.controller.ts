@@ -29,7 +29,7 @@ export class UsersController {
   getUsersController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ): { users: Users[]; totalPages: number; totalUsers: number } {
+  ) {
     const pageNumber = page ? Number(page) : 1;
     const limitNumber = limit ? Number(limit) : 5;
 
@@ -38,13 +38,15 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  getUserByIdController(@Param('id') id: string): Users {
+  getUserByIdController(@Param('id') id: string) {
     return this.userService.getUserByIdService(id);
   }
 
   @Post()
   // @HttpCode(HttpStatus.CREATED) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
-  createUserController(@Body() newUser: Users): Users | string {
+  createUserController(
+    @Body() newUser: Users,
+  ): Promise<Partial<Users>> | string {
     if (validateUser(newUser)) {
       return this.userService.createUserService(newUser);
     }
@@ -56,7 +58,7 @@ export class UsersController {
   updateUserController(
     @Param('id') id: string,
     @Body() updatedData: Partial<Users>,
-  ): Users | string {
+  ): Promise<Partial<Users>> | string {
     if (validateUser(updatedData)) {
       return this.userService.updateUserService(id, updatedData);
     }
@@ -65,7 +67,7 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  deleteUserController(@Param('id') id: string): Users {
+  deleteUserController(@Param('id') id: string): Promise<Partial<Users>> {
     return this.userService.deleteUserService(id);
   }
 }

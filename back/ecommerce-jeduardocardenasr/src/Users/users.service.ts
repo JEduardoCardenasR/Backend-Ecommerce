@@ -6,28 +6,28 @@ import { Users } from 'src/entities/users.entity';
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  getUsersService(
-    page: number,
-    limit: number,
-  ): { users: Users[]; totalPages: number; totalUsers: number } {
+  getUsersService(page: number, limit: number) {
     return this.usersRepository.getUsers(page, limit);
   }
 
-  getUserByIdService(id: string): Users {
+  getUserByIdService(id: string) {
     return this.usersRepository.getUserById(id);
   }
 
-  createUserService(newUser: Users): Users {
+  createUserService(newUser: Users): Promise<Partial<Users>> {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...filteredData } = newUser; //Eliminamos el id por si la solicitud la trae
     return this.usersRepository.createUser(filteredData);
   }
 
-  updateUserService(id: string, updatedData: Partial<Users>): Users {
+  updateUserService(
+    id: string,
+    updatedData: Partial<Users>,
+  ): Promise<Partial<Users>> {
     return this.usersRepository.updateUser(id, updatedData);
   }
 
-  deleteUserService(id: string): Users {
+  deleteUserService(id: string) {
     return this.usersRepository.deleteUser(id);
   }
 }

@@ -9,10 +9,10 @@ export class AuthService {
     return 'Logged in';
   }
 
-  signInService(email: string, password: string) {
+  async signInService(email: string, password: string) {
     if (!email || !password) return 'Data required';
 
-    const user = this.userRepository.getUserByEmail(email);
+    const user = await this.userRepository.getUserByEmail(email);
 
     if (!user) return 'Invalid Credentials';
 
