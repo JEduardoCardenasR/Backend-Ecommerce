@@ -58,20 +58,18 @@ export class ProductsRepository {
   }
 
   async addProduct() {
-    const categories = await this.categoriesRepository.find();
+    const categories = await this.categoriesRepository.find(); // Asegura que se obtienen las categorías
 
-    data?.map(async (element) => {
-      const category = categories.find(
-        (category) => category.name === element.category,
-      );
+    for (const element of data) {
+      const category = categories.find((cat) => cat.name === element.category);
+
       const product = new Products();
-
       product.name = element.name;
       product.description = element.description;
       product.price = element.price;
       product.imgUrl = element.imgUrl;
       product.stock = element.stock;
-      product.category = category;
+      product.category = category; // Se asigna correctamente
 
       await this.productsRepository
         .createQueryBuilder()
@@ -80,7 +78,8 @@ export class ProductsRepository {
         .values(product)
         .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name'])
         .execute();
-    });
+    }
+
     return 'Productos agregados';
   }
 
@@ -90,7 +89,7 @@ export class ProductsRepository {
   //   this.products.push({ id, ...newProduct });
   //   return { id, ...newProduct };
   // }
-  
+
   // deleteProduct(id: string): Products {
   //   const index = this.products.findIndex((product) => product.id === id);
   //   const deletedProduct = this.products[index];

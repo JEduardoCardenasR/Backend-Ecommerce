@@ -1,14 +1,10 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
 import { Products } from 'src/entities/products.entity';
 
 @Injectable()
-export class ProductsService implements OnModuleInit {
+export class ProductsService {
   constructor(private readonly productsRepository: ProductsRepository) {}
-
-  async onModuleInit() {
-    await this.addProductsService(); //Carga automática de los productos
-  }
 
   async getProductsService(
     page: number,
@@ -18,6 +14,7 @@ export class ProductsService implements OnModuleInit {
     totalPages: number;
     totalProducts: number;
   }> {
+    // await this.addProductsService(); //Carga previa de los productos
     return await this.productsRepository.getProducts(page, limit);
   }
 
@@ -41,7 +38,7 @@ export class ProductsService implements OnModuleInit {
   //   const { id, ...filteredData } = newProduct; //Eliminamos el id
   //   return this.productsRepository.createProduct(filteredData);
   // }
-  
+
   // deleteProductService(id: string): Products {
   //   return this.productsRepository.deleteProduct(id);
   // }

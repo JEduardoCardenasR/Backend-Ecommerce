@@ -1,13 +1,9 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CategoriesRepository } from './categories.repository';
 
 @Injectable()
-export class CategoriesService implements OnModuleInit {
+export class CategoriesService {
   constructor(private categoriesRepository: CategoriesRepository) {}
-
-  async onModuleInit() {
-    await this.addCategories(); //Carga automática de las categorías
-  }
 
   addCategories() {
     return this.categoriesRepository.addCategories();

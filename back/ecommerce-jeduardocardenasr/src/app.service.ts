@@ -1,7 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { CategoriesService } from './categories/categories.service';
+import { ProductsService } from './Products/products.service';
 
 @Injectable()
-export class AppService {
+export class AppService implements OnModuleInit {
+  constructor(
+    private categoriesService: CategoriesService,
+    private productsService: ProductsService,
+  ) {}
+
+  async onModuleInit() {
+    await this.categoriesService.addCategories(); //Carga automática de las categorías cuando se incia el servidor.
+    await this.productsService.addProductsService(); //Carga automática de los productos cuando se incia el servidor.
+  }
+
   getHello(): string {
     return 'Hello World!';
   }

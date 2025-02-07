@@ -16,16 +16,15 @@ export class CategoriesRepository {
   }
 
   async addCategories() {
-    data?.map(async (element) => {
+    for (const element of data) {
       await this.categoriesRepository
-
         .createQueryBuilder()
         .insert()
         .into(Categories)
         .values({ name: element.category })
         .orIgnore()
         .execute();
-    });
+    }
     return 'Categorías agregadas';
   }
 }
