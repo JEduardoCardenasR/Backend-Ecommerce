@@ -36,6 +36,7 @@ export class OrdersRepository {
 
     //Asociar cada id recibido con la entidad producto
     const productsArray = await Promise.all(
+      //Promise.all porque tiene que esperar que se hagan todos los registros
       products.map(async (element) => {
         const product = await this.productsRepository.findOneBy({
           id: element.id,

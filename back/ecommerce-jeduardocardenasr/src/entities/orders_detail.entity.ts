@@ -33,11 +33,11 @@ export class OrderDetails {
   @JoinTable({
     name: 'orderdetails_products',
     joinColumn: {
-      name: 'product_id',
+      name: 'orderdetail_id',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'orderdetail_id',
+      name: 'product_id',
       referencedColumnName: 'id',
     },
   })

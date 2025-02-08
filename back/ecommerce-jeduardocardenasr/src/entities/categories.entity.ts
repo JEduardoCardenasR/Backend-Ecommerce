@@ -23,6 +23,6 @@ export class Categories {
   name: string;
 
   @OneToMany(() => Products, (product) => product.category)
-  @JoinColumn()
+  @JoinColumn({ name: 'product_id' })
   products: Products[];
 }

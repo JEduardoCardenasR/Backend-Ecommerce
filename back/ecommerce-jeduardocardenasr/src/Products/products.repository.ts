@@ -76,7 +76,7 @@ export class ProductsRepository {
         .insert()
         .into(Products)
         .values(product)
-        .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name'])
+        .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name']) //name es aparte porque es un valor único
         .execute();
     }
 
