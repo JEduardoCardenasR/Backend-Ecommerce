@@ -6,6 +6,7 @@ import {
   // HttpCode,
   // HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   Query,
@@ -15,8 +16,9 @@ import {
 import { UsersService } from './users.service';
 import { ExcludePasswordInterceptor } from 'src/interceptors/exclude-password.interceptor';
 import { AuthGuard } from 'src/Auth/auth-guard.guard';
-import { validateUser } from 'src/utils/users.validate';
+// import { validateUser } from 'src/utils/users.validate';
 import { Users } from 'src/entities/users.entity';
+import { CreateUserDto } from './user.dto';
 
 @Controller('users')
 @UseInterceptors(ExcludePasswordInterceptor) //Interceptor para no mostrar password
@@ -38,36 +40,53 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
-  getUserByIdController(@Param('id') id: string) {
+  getUserByIdController(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.getUserByIdService(id);
   }
 
   @Post()
-  // @HttpCode(HttpStatus.CREATED) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
   createUserController(
-    @Body() newUser: Users,
-  ): Promise<Partial<Users>> | string {
-    if (validateUser(newUser)) {
-      return this.userService.createUserService(newUser);
-    }
-    return 'Usuario no válido';
+    @Body() newUser: CreateUserDto,
+  ): Promise<Partial<Users>> {
+    return this.userService.createUserService(newUser);
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)
   updateUserController(
-    @Param('id') id: string,
-    @Body() updatedData: Partial<Users>,
-  ): Promise<Partial<Users>> | string {
-    if (validateUser(updatedData)) {
-      return this.userService.updateUserService(id, updatedData);
-    }
-    return 'Usuario no válido';
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updatedData: Partial<CreateUserDto>,
+  ): Promise<Partial<Users>> {
+    return this.userService.updateUserService(id, updatedData);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  deleteUserController(@Param('id') id: string): Promise<Partial<Users>> {
+  deleteUserController(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<Partial<Users>> {
     return this.userService.deleteUserService(id);
   }
 }
+
+// @Post()
+//   // @HttpCode(HttpStatus.CREATED) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
+//   createUserController(
+//     @Body() newUser: Users,
+//   ): Promise<Partial<Users>> | string {
+//     if (validateUser(newUser)) {
+//       return this.userService.createUserService(newUser);
+//     }
+//     return 'Usuario no válido';
+//   }
+
+// @Put(':id')
+//   @UseGuards(AuthGuard)
+//   updateUserController(
+//     @Param('id') id: string,
+//     @Body() updatedData: Partial<Users>,
+//   ): Promise<Partial<Users>> | string {
+//     if (validateUser(updatedData)) {
+//       return this.userService.updateUserService(id, updatedData);
+//     }
+//     return 'Usuario no válido';
+//   }

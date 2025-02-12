@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { LoggerMiddleware } from './middlewares/logger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,8 @@ async function bootstrap() {
 
   // Otra versión:
   // app.use((req, res, next) => new LoggerMiddleware().use(req, res, next));
+
+  app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(process.env.PORT ?? 3000);
 }

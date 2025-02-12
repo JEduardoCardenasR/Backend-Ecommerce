@@ -33,6 +33,7 @@ export class ExcludePasswordInterceptor implements NestInterceptor {
           return data.map(({ password, ...rest }) => rest);
         } else if (typeof data === 'object' && data !== null) {
           // Si la respuesta es un objeto único, excluimos `password`
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { password, ...rest } = data;
           return rest;
         }

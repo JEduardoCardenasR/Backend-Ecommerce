@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersRepository } from 'src/Users/users.repository';
 
 @Injectable()
@@ -10,14 +14,20 @@ export class AuthService {
   }
 
   async signInService(email: string, password: string) {
-    if (!email || !password) return 'Data required';
+    if (!email || !password) {
+      throw new BadRequestException('Email y contraseña son requeridos');
+    }
 
     const user = await this.userRepository.getUserByEmail(email);
 
-    if (!user) return 'Invalid Credentials';
+    if (!user) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
 
-    if (user.password === password) return 'Logged in';
+    if (user.password !== password) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
 
-    return 'Invalid Credentials';
+    return 'Logged in';
   }
 }

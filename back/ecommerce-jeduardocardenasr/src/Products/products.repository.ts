@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Categories } from 'src/entities/categories.entity';
 import { Products } from 'src/entities/products.entity';
 import { data } from 'src/utils/Archivo_actividad_3';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsRepository {
@@ -22,22 +22,18 @@ export class ProductsRepository {
     totalPages: number;
     totalProducts: number;
   }> {
-    const products = await this.productsRepository.find({
-      relations: {
-        category: true,
-      },
-    });
+    const [products, totalProducts] =
+      await this.productsRepository.findAndCount({
+        //Find and Count te devuelve los productos (primer valor) y el total de productos (segundo valor)
+        where: { stock: MoreThan(0) }, // Solo productos con stock > 0
+        relations: { category: true },
+        take: limit,
+        skip: (page - 1) * limit,
+      });
 
-    const totalProducts = products.length;
     const totalPages = Math.ceil(totalProducts / limit);
-    const start = (page - 1) * limit;
-    const end = start + limit;
 
-    return {
-      products: products.slice(start, end), // Solo devuelve los productos de la página
-      totalProducts,
-      totalPages,
-    };
+    return { products, totalProducts, totalPages };
   }
 
   async getProductById(id: string): Promise<Products> {

@@ -5,6 +5,7 @@ import {
   // Delete,
   Get,
   Param,
+  ParseUUIDPipe,
   // Post,
   Put,
   Query,
@@ -43,14 +44,16 @@ export class ProductsController {
   }
 
   @Get(':id')
-  async getProductByIdController(@Param('id') id: string): Promise<Products> {
+  async getProductByIdController(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<Products> {
     return await this.productsService.getProductByIdService(id);
   }
 
   @Put(':id')
   @UseGuards(AuthGuard)
   async updateProductController(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedProduct: Partial<Products>,
   ): Promise<Products> {
     if (!validateProduct(updatedProduct)) {
@@ -70,7 +73,7 @@ export class ProductsController {
 
   // @Delete(':id')
   // @UseGuards(AuthGuard)
-  // deleteProductController(@Param('id') id: string): Products {
+  // deleteProductController(@Param('id', ParseUUIDPipe) id: string): Products {
   //   return this.productsService.deleteProductService(id);
   // }
 }

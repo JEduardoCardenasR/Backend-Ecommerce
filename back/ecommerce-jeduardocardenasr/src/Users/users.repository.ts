@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from 'src/entities/users.entity';
 import { Repository } from 'typeorm';
@@ -28,7 +28,9 @@ export class UsersRepository {
       },
     });
 
-    if (!user) return `No se encontró el usuario con id ${id}`;
+    if (!user) {
+      throw new NotFoundException(`No se encontró el usuario con id ${id}`);
+    }
     return user;
   }
 
@@ -45,6 +47,11 @@ export class UsersRepository {
 
   async deleteUser(id: string): Promise<Partial<Users>> {
     const user = await this.usersRepository.findOneBy({ id });
+
+    if (!user) {
+      throw new NotFoundException(`No se encontró el usuario con id ${id}`);
+    }
+
     this.usersRepository.remove(user);
     return user;
   }
