@@ -44,6 +44,8 @@ export class Users {
   @Column({
     type: 'varchar',
     length: 50,
+    nullable: true,
+    default: 'Not specified',
   })
   country: string;
 
@@ -55,6 +57,8 @@ export class Users {
   @Column({
     type: 'varchar',
     length: 50,
+    nullable: true,
+    default: 'Not specified',
   })
   city: string;
 
