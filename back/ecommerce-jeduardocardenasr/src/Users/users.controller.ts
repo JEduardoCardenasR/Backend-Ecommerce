@@ -7,21 +7,21 @@ import {
   // HttpStatus,
   Param,
   ParseUUIDPipe,
-  Post,
+  // Post,
   Put,
   Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ExcludePasswordInterceptor } from 'src/interceptors/exclude-password.interceptor';
+import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
 import { AuthGuard } from 'src/Auth/auth-guard.guard';
 // import { validateUser } from 'src/utils/users.validate';
 import { Users } from 'src/entities/users.entity';
 import { CreateUserDto } from './user.dto';
 
 @Controller('users')
-@UseInterceptors(ExcludePasswordInterceptor) //Interceptor para no mostrar password
+@UseInterceptors(ExcludeSensitiveFieldsInterceptor) //Interceptor para no mostrar password
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
@@ -44,14 +44,15 @@ export class UsersController {
     return this.userService.getUserByIdService(id);
   }
 
-  @Post()
-  createUserController(
-    @Body() newUser: CreateUserDto,
-  ): Promise<Partial<Users>> {
-    return this.userService.createUserService(newUser);
-  }
+  // @Post()
+  // createUserController(
+  //   @Body() newUser: CreateUserDto,
+  // ): Promise<Partial<Users>> {
+  //   return this.userService.createUserService(newUser);
+  // }
 
   @Put(':id')
+  @UseGuards(AuthGuard)
   updateUserController(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedData: Partial<CreateUserDto>,

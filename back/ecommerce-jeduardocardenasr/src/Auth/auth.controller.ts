@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDTO } from 'src/Users/user.dto';
+import { CreateUserDto, LoginUserDTO } from 'src/Users/user.dto';
+import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -9,6 +10,12 @@ export class AuthController {
   @Get()
   getAuthController(): string {
     return this.authService.getAuth();
+  }
+
+  @Post('signup')
+  @UseInterceptors(ExcludeSensitiveFieldsInterceptor)
+  signUp(@Body() user: CreateUserDto) {
+    return this.authService.signUpService(user);
   }
 
   @Post('signin')

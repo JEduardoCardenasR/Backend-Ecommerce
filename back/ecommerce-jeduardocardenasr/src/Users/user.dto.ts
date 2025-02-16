@@ -9,7 +9,9 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  Validate,
 } from 'class-validator';
+import { MatchPassword } from 'src/decorators/matchPassword.decorator';
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -42,6 +44,11 @@ export class CreateUserDto {
       'La contraseña debe incluir al menos un símbolo especial (!@#$%^&*).',
   })
   password: string;
+
+  //Valida directamente dentro del DTO
+  @IsNotEmpty()
+  @Validate(MatchPassword, ['password']) //Este password es el DTO password
+  confirmPassword: string;
 
   @IsNotEmpty()
   @IsNumber()
