@@ -7,24 +7,24 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 
-function validate(request) {
-  const authHeader = request.headers.authorization;
+// function validate(request) {
+//   const authHeader = request.headers.authorization;
 
-  // if (!authHeader) return false;
+//   // if (!authHeader) return false;
 
-  if (!authHeader) {
-    throw new UnauthorizedException('¡El header de autorización no existe!');
-  }
+//   if (!authHeader) {
+//     throw new UnauthorizedException('¡El header de autorización no existe!');
+//   }
 
-  const [email, password] = authHeader.split(':');
+//   const [email, password] = authHeader.split(':');
 
-  // if (!email || !password) return false;
+//   // if (!email || !password) return false;
 
-  if (!email || !password) {
-    throw new UnauthorizedException('¡Credenciales inválidas!');
-  }
-  return true;
-}
+//   if (!email || !password) {
+//     throw new UnauthorizedException('¡Credenciales inválidas!');
+//   }
+//   return true;
+// }
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -50,7 +50,10 @@ export class AuthGuard implements CanActivate {
       payload.exp = new Date(payload.exp * 1000);
       payload.iat = new Date(payload.iat * 1000);
 
+      request.user = payload;
+
       return true;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }

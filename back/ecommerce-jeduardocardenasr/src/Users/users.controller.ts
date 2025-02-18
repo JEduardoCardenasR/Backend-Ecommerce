@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
-import { AuthGuard } from 'src/Auth/auth-guard.guard';
+import { AuthGuard } from 'src/Auth/guards/auth-guard.guard';
 // import { validateUser } from 'src/utils/users.validate';
 import { Users } from 'src/entities/users.entity';
 import { CreateUserDto } from './user.dto';

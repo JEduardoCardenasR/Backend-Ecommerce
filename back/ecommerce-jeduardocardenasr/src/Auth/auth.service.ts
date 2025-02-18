@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from 'src/Users/users.repository';
 import * as bcrypt from 'bcrypt';
-import { Users } from 'src/entities/users.entity';
 import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from 'src/Users/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,24 +20,33 @@ export class AuthService {
   }
 
   //Registro de usuario:
-  async signUpService(user: Partial<Users>) {
+  async signUpService(user: CreateUserDto) {
     //Validación de datos
     const { email, password } = user;
 
     if (!email || !password)
       throw new BadRequestException('Required email and password');
 
+    //Verificar si extiste el usuario (mail)
     const foundUser = await this.userRepository.getUserByEmail(email);
 
     if (foundUser)
       throw new BadRequestException('Email already been registered');
+
+    //Verificar si existen las contraseñas (Ya se está validando en el DTO)
+    // if (password !== user.confirmPassword)
+    //   throw new BadRequestException('Passwords do not match');
 
     //Proceso de registro
 
     //Hashear el password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    if (!hashedPassword)
+      throw new BadRequestException('Password could not be hashed');
+
     //Guardar el usuario en la base de datos
+
     return await this.userRepository.createUser({
       ...user,
       password: hashedPassword,
@@ -70,6 +79,7 @@ export class AuthService {
     const payload = {
       id: user.id,
       email: user.email,
+      isAdmin: user.isAdmin,
     };
 
     //Generamos el token:
@@ -77,7 +87,7 @@ export class AuthService {
 
     //Entregamos la respuesta:
     return {
-      message: 'Logged-in User',
+      message: 'Successfully Logged-in User',
       token,
     };
   }

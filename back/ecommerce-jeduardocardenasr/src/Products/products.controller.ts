@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from 'src/Auth/auth-guard.guard';
+import { AuthGuard } from 'src/Auth/guards/auth-guard.guard';
 import { validateProduct } from 'src/utils/products.validate';
 import { Products } from 'src/entities/products.entity';
 
