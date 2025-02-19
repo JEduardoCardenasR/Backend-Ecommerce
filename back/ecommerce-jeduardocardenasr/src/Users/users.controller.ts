@@ -14,20 +14,26 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
-import { AuthGuard } from 'src/Auth/guards/auth-guard.guard';
+// import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
+import { AuthGuard } from 'src/Auth/guards/auth.guard';
 // import { validateUser } from 'src/utils/users.validate';
 import { Users } from 'src/entities/users.entity';
 import { CreateUserDto } from './user.dto';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Rol } from 'src/enums/roles.enum';
+import { RolesGuard } from 'src/Auth/guards/roles.guard';
+import { ExcludeFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
 
 @Controller('users')
-@UseInterceptors(ExcludeSensitiveFieldsInterceptor) //Interceptor para no mostrar password
+// @UseInterceptors(ExcludeSensitiveFieldsInterceptor) //Interceptor para no mostrar password
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
   // @HttpCode(HttpStatus.OK) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
-  @UseGuards(AuthGuard)
+  @Roles(Rol.Administrator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @UseInterceptors(ExcludeFieldsInterceptor(['password', 'confirmPassword']))
   getUsersController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -40,6 +46,9 @@ export class UsersController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
+  @UseInterceptors(
+    ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
+  )
   getUserByIdController(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.getUserByIdService(id);
   }
@@ -53,6 +62,9 @@ export class UsersController {
 
   @Put(':id')
   @UseGuards(AuthGuard)
+  @UseInterceptors(
+    ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
+  )
   updateUserController(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedData: Partial<CreateUserDto>,
@@ -62,6 +74,9 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
+  @UseInterceptors(
+    ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
+  )
   deleteUserController(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<Partial<Users>> {

@@ -12,9 +12,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from 'src/Auth/guards/auth-guard.guard';
+import { AuthGuard } from 'src/Auth/guards/auth.guard';
 import { validateProduct } from 'src/utils/products.validate';
 import { Products } from 'src/entities/products.entity';
+import { Rol } from 'src/enums/roles.enum';
+import { Roles } from 'src/decorators/roles.decorator';
+import { RolesGuard } from 'src/Auth/guards/roles.guard';
 
 @Controller('products')
 export class ProductsController {
@@ -51,7 +54,8 @@ export class ProductsController {
   }
 
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @Roles(Rol.Administrator)
+  @UseGuards(AuthGuard, RolesGuard)
   async updateProductController(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedProduct: Partial<Products>,
