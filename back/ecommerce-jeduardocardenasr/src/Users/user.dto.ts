@@ -12,7 +12,7 @@ import {
   MinLength,
   Validate,
 } from 'class-validator';
-import { MatchPassword } from 'src/decorators/matchPassword.decorator';
+import { MatchPassword } from '../decorators/matchPassword.decorator';
 
 export class CreateUserDto {
   @IsNotEmpty()

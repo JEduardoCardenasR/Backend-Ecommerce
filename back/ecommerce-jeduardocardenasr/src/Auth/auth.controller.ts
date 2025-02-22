@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto, LoginUserDTO } from 'src/Users/user.dto';
-import { ExcludeFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
+import { CreateUserDto, LoginUserDTO } from '../Users/user.dto';
+import { ExcludeFieldsInterceptor } from '../interceptors/exclude-password.interceptor';
 // import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
 
 @Controller('auth')

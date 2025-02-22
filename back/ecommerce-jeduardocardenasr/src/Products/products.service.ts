@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
-import { Products } from 'src/entities/products.entity';
+import { Products } from '../entities/products.entity';
 
 @Injectable()
 export class ProductsService {
@@ -19,7 +19,13 @@ export class ProductsService {
   }
 
   async getProductByIdService(id: string): Promise<Products> {
-    return await this.productsRepository.getProductById(id);
+    const product = await this.productsRepository.getProductById(id);
+
+    if (!product) {
+      throw new NotFoundException(`Producto con id ${id} no enconrado`);
+    }
+
+    return product;
   }
 
   addProductsService() {
@@ -32,14 +38,13 @@ export class ProductsService {
   ): Promise<Products> {
     return await this.productsRepository.updateProduct(id, updatedProduct);
   }
-
-  // createProductService(newProduct: Products): Products {
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   const { id, ...filteredData } = newProduct; //Eliminamos el id
-  //   return this.productsRepository.createProduct(filteredData);
-  // }
-
-  // deleteProductService(id: string): Products {
-  //   return this.productsRepository.deleteProduct(id);
-  // }
 }
+// createProductService(newProduct: Products): Products {
+//   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//   const { id, ...filteredData } = newProduct; //Eliminamos el id
+//   return this.productsRepository.createProduct(filteredData);
+// }
+
+// deleteProductService(id: string): Products {
+//   return this.productsRepository.deleteProduct(id);
+// }

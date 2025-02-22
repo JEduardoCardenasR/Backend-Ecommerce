@@ -3,10 +3,10 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { UsersRepository } from 'src/Users/users.repository';
+import { UsersRepository } from '../Users/users.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from 'src/Users/user.dto';
+import { CreateUserDto } from '../Users/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +31,7 @@ export class AuthService {
     const foundUser = await this.userRepository.getUserByEmail(email);
 
     if (foundUser)
-      throw new BadRequestException('Email already been registered');
+      throw new BadRequestException('Email has already been registered');
 
     //Verificar si existen las contraseñas (Ya se está validando en el DTO)
     // if (password !== user.confirmPassword)

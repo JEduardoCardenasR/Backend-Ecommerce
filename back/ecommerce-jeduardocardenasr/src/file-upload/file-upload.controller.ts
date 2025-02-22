@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileUploadService } from './file-upload.service';
-import { AuthGuard } from 'src/Auth/guards/auth.guard';
+import { AuthGuard } from '../Auth/guards/auth.guard';
 
 const maxSizeInBytes = 200000;
 

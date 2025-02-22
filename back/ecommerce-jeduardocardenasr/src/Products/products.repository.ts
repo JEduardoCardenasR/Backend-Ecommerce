@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Categories } from 'src/entities/categories.entity';
-import { Products } from 'src/entities/products.entity';
-import { data } from 'src/utils/Archivo_actividad_3';
+import { Categories } from '../entities/categories.entity';
+import { Products } from '../entities/products.entity';
+import { data } from '../utils/Archivo_actividad_3';
 import { MoreThan, Repository } from 'typeorm';
 
 @Injectable()
@@ -37,11 +37,7 @@ export class ProductsRepository {
   }
 
   async getProductById(id: string): Promise<Products> {
-    const product = await this.productsRepository.findOneBy({ id });
-    if (!product) {
-      throw new NotFoundException(`Producto con id ${id} no enconrado`);
-    }
-    return product;
+    return await this.productsRepository.findOneBy({ id });
   }
 
   async updateProduct(
@@ -78,18 +74,17 @@ export class ProductsRepository {
 
     return 'Productos agregados';
   }
-
-  // createProduct(newProduct: Omit<Products, 'id'>): Products {
-  //   const idNumber = this.products.length + 1;
-  //   const id = idNumber.toString();
-  //   this.products.push({ id, ...newProduct });
-  //   return { id, ...newProduct };
-  // }
-
-  // deleteProduct(id: string): Products {
-  //   const index = this.products.findIndex((product) => product.id === id);
-  //   const deletedProduct = this.products[index];
-  //   this.products.splice(index, 1);
-  //   return deletedProduct;
-  // }
 }
+// createProduct(newProduct: Omit<Products, 'id'>): Products {
+//   const idNumber = this.products.length + 1;
+//   const id = idNumber.toString();
+//   this.products.push({ id, ...newProduct });
+//   return { id, ...newProduct };
+// }
+
+// deleteProduct(id: string): Products {
+//   const index = this.products.findIndex((product) => product.id === id);
+//   const deletedProduct = this.products[index];
+//   this.products.splice(index, 1);
+//   return deletedProduct;
+// }

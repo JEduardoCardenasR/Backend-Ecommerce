@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './orders.dto';
-import { AuthGuard } from 'src/Auth/guards/auth.guard';
+import { AuthGuard } from '../Auth/guards/auth.guard';
 
 @Controller('orders')
 export class OrdersController {

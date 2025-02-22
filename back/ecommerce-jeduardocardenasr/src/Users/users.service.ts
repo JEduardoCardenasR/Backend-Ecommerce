@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { Users } from 'src/entities/users.entity';
+import { Users } from '../entities/users.entity';
 import { CreateUserDto } from './user.dto';
 
 @Injectable()
@@ -12,7 +12,12 @@ export class UsersService {
   }
 
   getUserByIdService(id: string) {
-    return this.usersRepository.getUserById(id);
+    const user = this.usersRepository.getUserById(id);
+
+    if (!user) {
+      throw new NotFoundException(`No se encontró el usuario con id ${id}`);
+    }
+    return user;
   }
 
   createUserService(newUser: CreateUserDto): Promise<Partial<Users>> {
@@ -26,8 +31,14 @@ export class UsersService {
     return this.usersRepository.updateUser(id, updatedData);
   }
 
-  deleteUserService(id: string) {
-    return this.usersRepository.deleteUser(id);
+  async deleteUserService(id: string) {
+    const user = await this.usersRepository.deleteUser(id);
+
+    if (!user) {
+      throw new NotFoundException(`No se encontró el usuario con id ${id}`);
+    }
+
+    return user;
   }
 }
 

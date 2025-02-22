@@ -12,12 +12,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from 'src/Auth/guards/auth.guard';
-import { validateProduct } from 'src/utils/products.validate';
-import { Products } from 'src/entities/products.entity';
-import { Rol } from 'src/enums/roles.enum';
-import { Roles } from 'src/decorators/roles.decorator';
-import { RolesGuard } from 'src/Auth/guards/roles.guard';
+import { AuthGuard } from '../Auth/guards/auth.guard';
+import { validateProduct } from '../utils/products.validate';
+import { Products } from '../entities/products.entity';
+import { Rol } from '../enums/roles.enum';
+import { Roles } from '../decorators/roles.decorator';
+import { RolesGuard } from '../Auth/guards/roles.guard';
 
 @Controller('products')
 export class ProductsController {

@@ -15,14 +15,14 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 // import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
-import { AuthGuard } from 'src/Auth/guards/auth.guard';
-// import { validateUser } from 'src/utils/users.validate';
-import { Users } from 'src/entities/users.entity';
+import { AuthGuard } from '../Auth/guards/auth.guard';
+// import { validateUser } from '../utils/users.validate';
+import { Users } from '../entities/users.entity';
 import { CreateUserDto } from './user.dto';
-import { Roles } from 'src/decorators/roles.decorator';
-import { Rol } from 'src/enums/roles.enum';
-import { RolesGuard } from 'src/Auth/guards/roles.guard';
-import { ExcludeFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
+import { Roles } from '../decorators/roles.decorator';
+import { Rol } from '../enums/roles.enum';
+import { RolesGuard } from '../Auth/guards/roles.guard';
+import { ExcludeFieldsInterceptor } from '../interceptors/exclude-password.interceptor';
 
 @Controller('users')
 // @UseInterceptors(ExcludeSensitiveFieldsInterceptor) //Interceptor para no mostrar password
