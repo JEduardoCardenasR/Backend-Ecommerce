@@ -10,7 +10,7 @@ export class AppService implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.categoriesService.addCategories(); //Carga automática de las categorías cuando se incia el servidor.
+    await this.categoriesService.addCategoriesService(); //Carga automática de las categorías cuando se incia el servidor.
     await this.productsService.addProductsService(); //Carga automática de los productos cuando se incia el servidor.
   }
 

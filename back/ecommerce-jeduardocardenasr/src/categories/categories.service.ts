@@ -5,11 +5,11 @@ import { CategoriesRepository } from './categories.repository';
 export class CategoriesService {
   constructor(private categoriesRepository: CategoriesRepository) {}
 
-  addCategories() {
+  addCategoriesService() {
     return this.categoriesRepository.addCategories();
   }
 
-  getCategories() {
+  getCategoriesService() {
     return this.categoriesRepository.getCategories();
   }
 }

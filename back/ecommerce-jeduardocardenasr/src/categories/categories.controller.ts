@@ -3,15 +3,15 @@ import { CategoriesService } from './categories.service';
 
 @Controller('categories')
 export class CategoriesController {
-  constructor(private cateforiesService: CategoriesService) {}
+  constructor(private categoriesService: CategoriesService) {}
 
   @Get('seeder')
-  addCategories() {
-    return this.cateforiesService.addCategories();
+  addCategoriesController() {
+    return this.categoriesService.addCategoriesService();
   }
 
   @Get()
-  getCategories() {
-    return this.cateforiesService.getCategories();
+  getCategoriesController() {
+    return this.categoriesService.getCategoriesService();
   }
 }

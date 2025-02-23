@@ -11,8 +11,8 @@ export class UsersService {
     return this.usersRepository.getUsers(page, limit);
   }
 
-  getUserByIdService(id: string) {
-    const user = this.usersRepository.getUserById(id);
+  async getUserByIdService(id: string) {
+    const user = await this.usersRepository.getUserById(id);
 
     if (!user) {
       throw new NotFoundException(`No se encontró el usuario con id ${id}`);
