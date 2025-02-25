@@ -52,20 +52,24 @@ export class OrdersService {
     // Guardamos la orden
     const newOrder = await this.ordersRepository.saveOrder(order);
 
-    // Creamos los detalles de la orden
+    // Guardar orderDetails sin los productos primero
     const orderDetail = new OrderDetails();
     orderDetail.price = Number(total.toFixed(2));
-    orderDetail.products = productsArray;
     orderDetail.order = newOrder;
 
-    await this.ordersRepository.saveOrderDetail(orderDetail);
+    const savedOrderDetail =
+      await this.ordersRepository.saveOrderDetail(orderDetail);
+
+    // Luego asignar los productos y guardar de nuevo. Esto asegura que OrderDetails primero exista en la BD antes de intentar relacionarlo con productos.
+    savedOrderDetail.products = productsArray;
+    await this.ordersRepository.saveOrderDetail(savedOrderDetail);
 
     // Retorna la orden con detalles
     return this.ordersRepository.getOrderWithDetails(newOrder.id);
   }
 
-  getOrderService(id: string) {
-    const order = this.ordersRepository.getOrderWithDetails(id);
+  async getOrderService(id: string) {
+    const order = await this.ordersRepository.getOrderWithDetails(id);
 
     if (!order) {
       throw new NotFoundException(`Orden con id ${id} no encontrada`);

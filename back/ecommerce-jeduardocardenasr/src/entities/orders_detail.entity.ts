@@ -29,7 +29,9 @@ export class OrderDetails {
   @JoinColumn({ name: 'order_id' })
   order: Orders;
 
-  @ManyToMany(() => Products)
+  @ManyToMany(() => Products, (product) => product.orderDetails, {
+    cascade: true,
+  })
   @JoinTable({
     name: 'orderdetails_products',
     joinColumn: {
