@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { CategoriesService } from './categories/categories.service';
-import { ProductsService } from './Products/products.service';
+import { ProductsService } from './products/products.service';
 
 @Injectable()
 export class AppService implements OnModuleInit {

@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { UsersRepository } from '../Users/users.repository';
+import { UsersRepository } from '../users/users.repository';
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from 'src/Users/user.dto';
+import { CreateUserDto } from 'src/dtos/user.dto';
 import { Users } from 'src/entities/users.entity';
 
 describe('AuthService', () => {

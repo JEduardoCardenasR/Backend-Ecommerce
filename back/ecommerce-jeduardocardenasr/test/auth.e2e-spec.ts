@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { UsersRepository } from '../src/Users/users.repository';
+import { UsersRepository } from '../src/users/users.repository';
 import * as bcrypt from 'bcrypt';
 
 describe('AuthController (e2e)', () => {

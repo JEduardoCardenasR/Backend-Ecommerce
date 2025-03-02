@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
-import { CreateOrderDto } from './orders.dto';
+import { CreateOrderDto } from '../dtos/orders.dto';
 import { Orders } from '../entities/orders.entity';
 import { OrderDetails } from '../entities/orders_detail.entity';
 

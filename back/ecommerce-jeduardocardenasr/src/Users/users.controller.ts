@@ -18,12 +18,19 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '../Auth/guards/auth.guard';
 // import { validateUser } from '../utils/users.validate';
 import { Users } from '../entities/users.entity';
-import { CreateUserDto } from './user.dto';
+import { CreateUserDto } from '../dtos/user.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { Rol } from '../enums/roles.enum';
 import { RolesGuard } from '../Auth/guards/roles.guard';
 import { ExcludeFieldsInterceptor } from '../interceptors/exclude-password.interceptor';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 
+@ApiTags('Users')
 @Controller('users')
 // @UseInterceptors(ExcludeSensitiveFieldsInterceptor) //Interceptor para no mostrar password
 export class UsersController {
@@ -31,9 +38,19 @@ export class UsersController {
 
   @Get()
   // @HttpCode(HttpStatus.OK) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
+  @ApiBearerAuth()
   @Roles(Rol.Administrator)
   @UseGuards(AuthGuard, RolesGuard)
   @UseInterceptors(ExcludeFieldsInterceptor(['password', 'confirmPassword']))
+  @ApiOperation({ summary: 'Retrieve all users (Admin only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of users retrieved successfully',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden: Only admins can access this data',
+  })
   getUsersController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -45,10 +62,14 @@ export class UsersController {
   }
 
   @Get(':id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
+  @ApiOperation({ summary: 'Retrieve a user by ID (Authenticated users only)' })
+  @ApiResponse({ status: 200, description: 'User retrieved successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized access' })
   getUserByIdController(@Param('id', ParseUUIDPipe) id: string) {
     return this.userService.getUserByIdService(id);
   }
@@ -61,10 +82,14 @@ export class UsersController {
   // }
 
   @Put(':id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
+  @ApiOperation({ summary: 'Update user details (Authenticated users only)' })
+  @ApiResponse({ status: 200, description: 'User updated successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized access' })
   updateUserController(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedData: Partial<CreateUserDto>,
@@ -73,10 +98,14 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
+  @ApiOperation({ summary: 'Delete a user (Authenticated users only)' })
+  @ApiResponse({ status: 200, description: 'User deleted successfully' })
+  @ApiResponse({ status: 401, description: 'Unauthorized access' })
   deleteUserController(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<Partial<Users>> {
