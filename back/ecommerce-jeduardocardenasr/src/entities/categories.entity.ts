@@ -6,16 +6,18 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Products } from './products.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, Length } from 'class-validator';
 
 @Entity({
   name: 'categories',
 })
 export class Categories {
-  @ApiProperty({
-    description: 'Unique identifier of the category',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-  })
+  // @ApiProperty({
+  //   description: 'Unique identifier of the category',
+  //   example: '550e8400-e29b-41d4-a716-446655440000',
+  // })
+  @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -29,6 +31,8 @@ export class Categories {
     nullable: false,
     unique: true,
   })
+  @IsNotEmpty()
+  @Length(2, 50)
   name: string;
 
   @ApiProperty({
@@ -36,6 +40,6 @@ export class Categories {
     type: [Products],
   })
   @OneToMany(() => Products, (product) => product.category)
-  @JoinColumn({ name: 'product_id' })
+  // @JoinColumn({ name: 'product_id' })
   products: Products[];
 }

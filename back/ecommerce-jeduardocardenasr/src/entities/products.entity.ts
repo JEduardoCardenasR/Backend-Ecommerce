@@ -8,16 +8,18 @@ import {
 } from 'typeorm';
 import { Categories } from './categories.entity';
 import { OrderDetails } from './orders_detail.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { IsDecimal, IsNotEmpty, IsPositive, Length } from 'class-validator';
 
 @Entity({
   name: 'products',
 })
 export class Products {
-  @ApiProperty({
-    description: 'Unique identifier of the product',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-  })
+  // @ApiProperty({
+  //   description: 'Unique identifier of the product',
+  //   example: '123e4567-e89b-12d3-a456-426614174000',
+  // })
+  @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -31,6 +33,8 @@ export class Products {
     unique: true,
     nullable: false,
   })
+  @IsNotEmpty()
+  @Length(2, 50)
   name: string;
 
   @ApiProperty({
@@ -41,6 +45,7 @@ export class Products {
     type: 'text',
     nullable: false,
   })
+  @IsNotEmpty()
   description: string;
 
   @ApiProperty({
@@ -53,6 +58,9 @@ export class Products {
     scale: 2,
     nullable: false,
   })
+  @IsDecimal()
+  @IsPositive()
+  @IsNotEmpty()
   price: number;
 
   @ApiProperty({
@@ -63,16 +71,19 @@ export class Products {
     type: 'int',
     nullable: false,
   })
+  @IsPositive()
+  @IsNotEmpty()
   stock: number;
 
   @ApiProperty({
     description: 'Image URL of the product',
-    example: '../assets/images/wireless-mouse.jpg',
+    example: 'https://example.com/images/headphones.jpg',
   })
   @Column({
     type: 'text',
     default: '../assets/images/DefaultImage.jpg',
   })
+  @IsNotEmpty()
   imgUrl: string;
 
   @ApiProperty({

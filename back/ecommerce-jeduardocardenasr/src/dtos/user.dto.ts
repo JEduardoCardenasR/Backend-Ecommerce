@@ -1,4 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import {
   IsEmail,
   IsEmpty,
@@ -16,13 +20,16 @@ import { MatchPassword } from '../decorators/matchPassword.decorator';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'Full name of the user',
-    example: 'Edu Cardi',
+    description:
+      'Full name of the user (String must be between 2 and 50 characters)',
+    example: 'Test Edu Cardi',
+    minLength: 2,
+    maxLength: 50,
   })
   @IsNotEmpty()
   @IsString()
-  @MinLength(3)
-  @MaxLength(80)
+  @MinLength(2)
+  @MaxLength(50)
   name: string;
 
   @ApiProperty({
@@ -35,8 +42,11 @@ export class CreateUserDto {
 
   @ApiProperty({
     description:
-      'Password (must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character)',
+      'Password (String must be between 8 and 15 characters and must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character)',
     example: 'SecureP@ss123',
+    minLength: 8,
+    maxLength: 15,
+    pattern: '(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*]).{8,15}',
   })
   @IsNotEmpty()
   @IsString()
@@ -60,59 +70,72 @@ export class CreateUserDto {
 
   //Valida directamente dentro del DTO
   @ApiProperty({
-    description: 'Confirm password (must match the password field)',
+    description: 'Confirm password (Must match the password field)',
     example: 'SecureP@ss123',
   })
   @IsNotEmpty()
-  @Validate(MatchPassword, ['password']) //Este password es el DTO password
+  @Validate(MatchPassword, ['password'], {
+    message: 'Passwords do not match.',
+  }) //Este password es el DTO password
+  @Matches(/^.*$/, { message: 'Must match the password field.' })
   confirmPassword: string;
 
   @ApiProperty({
-    description: 'User phone number',
+    description: 'User phone number (Must be type isNumber)',
     example: 1234567890,
+    type: Number,
   })
   @IsNotEmpty()
   @IsNumber()
   phone: number;
 
   @ApiProperty({
-    description: 'User address',
-    example: '123 Always Alive Avenue, Springfield, USA',
+    description: 'User address - String must be between 2 and 255 characters',
+    example: '123 Always Alive Avenue, SaltiYork, México',
+    minLength: 2,
+    maxLength: 255,
   })
   @IsNotEmpty()
   @IsString()
-  @MinLength(3)
-  @MaxLength(80)
+  @MinLength(2)
+  @MaxLength(255)
   address: string;
 
-  @ApiProperty({
-    description: 'Country of residence (optional)',
-    example: 'United States',
+  @ApiPropertyOptional({
+    description:
+      'Country of residence - String must be between 2 and 50 characters (optional)',
+    example: 'México',
+    minLength: 2,
+    maxLength: 50,
     required: false,
   })
   @IsString()
   @IsOptional()
-  @MinLength(5)
-  @MaxLength(20)
+  @MinLength(2)
+  @MaxLength(50)
   country?: string;
 
-  @ApiProperty({
-    description: 'City of residence (optional)',
-    example: 'New York',
+  @ApiPropertyOptional({
+    description:
+      'City of residence - String must be between 2 and 50 characters (optional)',
+    example: 'SaltiYork',
+    minLength: 2,
+    maxLength: 50,
     required: false,
   })
   @IsString()
   @IsOptional()
-  @MinLength(5)
-  @MaxLength(20)
+  @MinLength(2)
+  @MaxLength(50)
   city?: string;
 
-  @ApiProperty({
-    description:
-      'Defines if the user has admin privileges (always empty for security reasons)',
-    example: null,
-    required: false,
-  })
+  // @ApiProperty({
+  //   description:
+  //     'Defines if the user has admin privileges (always empty for security reasons)',
+  //   example: null,
+  //   required: false,
+  // })
+  @ApiHideProperty()
   @IsEmpty()
   isAdmin?: boolean;
 }

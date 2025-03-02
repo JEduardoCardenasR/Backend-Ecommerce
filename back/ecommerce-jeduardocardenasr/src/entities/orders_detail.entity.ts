@@ -9,16 +9,18 @@ import {
 } from 'typeorm';
 import { Products } from './products.entity';
 import { Orders } from './orders.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { IsDecimal, IsNotEmpty, IsPositive } from 'class-validator';
 
 @Entity({
   name: 'orderdetails',
 })
 export class OrderDetails {
-  @ApiProperty({
-    description: 'Unique identifier of the order detail',
-    example: 'a1234567-b89c-12d3-e456-426614174000',
-  })
+  // @ApiProperty({
+  //   description: 'Unique identifier of the order detail',
+  //   example: 'a1234567-b89c-12d3-e456-426614174000',
+  // })
+  @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -32,6 +34,9 @@ export class OrderDetails {
     scale: 2,
     nullable: false,
   })
+  @IsDecimal()
+  @IsPositive()
+  @IsNotEmpty()
   price: number;
 
   @ApiProperty({

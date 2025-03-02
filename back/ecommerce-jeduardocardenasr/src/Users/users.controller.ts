@@ -25,22 +25,30 @@ import { RolesGuard } from '../Auth/guards/roles.guard';
 import { ExcludeFieldsInterceptor } from '../interceptors/exclude-password.interceptor';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
+@UseGuards(AuthGuard)
 // @UseInterceptors(ExcludeSensitiveFieldsInterceptor) //Interceptor para no mostrar password
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
   // @HttpCode(HttpStatus.OK) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
-  @ApiBearerAuth()
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiSecurity('roles')
   @Roles(Rol.Administrator)
-  @UseGuards(AuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   @UseInterceptors(ExcludeFieldsInterceptor(['password', 'confirmPassword']))
   @ApiOperation({ summary: 'Retrieve all users (Admin only)' })
   @ApiResponse({
@@ -62,8 +70,6 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
@@ -82,24 +88,25 @@ export class UsersController {
   // }
 
   @Put(':id')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
   @ApiOperation({ summary: 'Update user details (Authenticated users only)' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
+  @ApiBody({
+    description: 'User data to update',
+    type: UpdateUserDto, // Usamos el DTO
+    required: true,
+  })
   updateUserController(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updatedData: Partial<CreateUserDto>,
+    @Body() updatedData: UpdateUserDto,
   ): Promise<Partial<Users>> {
     return this.userService.updateUserService(id, updatedData);
   }
 
   @Delete(':id')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )

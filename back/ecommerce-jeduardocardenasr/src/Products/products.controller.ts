@@ -20,10 +20,14 @@ import { Roles } from '../decorators/roles.decorator';
 import { RolesGuard } from '../Auth/guards/roles.guard';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { UpdateProductDto } from 'src/dtos/update-product.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -31,6 +35,8 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
   @ApiOperation({ summary: 'Retrieve all products with pagination' })
   @ApiResponse({
     status: 200,
@@ -73,6 +79,7 @@ export class ProductsController {
 
   @Put(':id')
   @ApiBearerAuth()
+  @ApiSecurity('roles')
   @Roles(Rol.Administrator)
   @UseGuards(AuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Update a product (Admin only)' })
@@ -82,9 +89,14 @@ export class ProductsController {
     status: 403,
     description: 'Forbidden: Only admins can update products',
   })
+  @ApiBody({
+    description: 'Product data to update',
+    type: UpdateProductDto,
+    required: true,
+  })
   async updateProductController(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updatedProduct: Partial<Products>,
+    @Body() updatedProduct: UpdateProductDto,
   ): Promise<Products> {
     if (!validateProduct(updatedProduct)) {
       throw new BadRequestException('Invalid Product');

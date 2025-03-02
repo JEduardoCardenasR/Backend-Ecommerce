@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { Users } from '../entities/users.entity';
 import { CreateUserDto } from '../dtos/user.dto';
+import { UpdateUserDto } from 'src/dtos/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -26,7 +27,7 @@ export class UsersService {
 
   updateUserService(
     id: string,
-    updatedData: Partial<CreateUserDto>,
+    updatedData: UpdateUserDto,
   ): Promise<Partial<Users>> {
     return this.usersRepository.updateUser(id, updatedData);
   }

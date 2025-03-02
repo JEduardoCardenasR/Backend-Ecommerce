@@ -21,7 +21,7 @@ async function bootstrap() {
   const openApiConfig = new DocumentBuilder()
     .setTitle('NestJS Api - Ecommerce FSPT23')
     .setDescription(
-      'Proyecto integrador de la especialidad backend del módulo 4',
+      'Integrative project for the backend specialization of module 4.',
     )
     .setVersion('1.0')
     .addBearerAuth() //Para acceder a la opción del token

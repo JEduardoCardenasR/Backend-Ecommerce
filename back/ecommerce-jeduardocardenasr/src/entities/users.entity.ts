@@ -1,21 +1,21 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Orders } from './orders.entity';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsOptional, Length } from 'class-validator';
 
 @Entity({
   name: 'users',
 })
 export class Users {
-  @ApiProperty({
-    description: 'Unique identifier of the user',
-    example: '550e8400-e29b-41d4-a716-446655440000',
-  })
+  // @ApiProperty({
+  //   description: 'Unique identifier of the user',
+  //   example: '550e8400-e29b-41d4-a716-446655440000',
+  // })
+  @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -28,6 +28,8 @@ export class Users {
     length: 50,
     nullable: false,
   })
+  @IsNotEmpty()
+  @Length(2, 50)
   name: string;
 
   @ApiProperty({
@@ -40,6 +42,8 @@ export class Users {
     unique: true,
     nullable: false,
   })
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @ApiProperty({
@@ -51,6 +55,7 @@ export class Users {
     length: 128,
     nullable: false,
   })
+  @IsNotEmpty()
   password: string;
 
   @ApiProperty({
@@ -60,9 +65,22 @@ export class Users {
   @Column({
     type: 'bigint',
   })
+  // @IsMobilePhone('any')
+  @IsNotEmpty()
+  @IsNotEmpty()
   phone: number;
 
   @ApiProperty({
+    description: 'User address',
+    example: '1234 Elm Street, NY',
+  })
+  @Column({
+    type: 'text',
+  })
+  @IsNotEmpty()
+  address: string;
+
+  @ApiPropertyOptional({
     description: 'User country',
     example: 'México',
   })
@@ -72,18 +90,11 @@ export class Users {
     nullable: true,
     default: 'Not specified',
   })
+  @Length(2, 50)
+  @IsOptional()
   country: string;
 
-  @ApiProperty({
-    description: 'User address',
-    example: '1234 Elm Street, NY',
-  })
-  @Column({
-    type: 'text',
-  })
-  address: string;
-
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'City of the user',
     example: 'SaltiYork',
   })
@@ -93,12 +104,15 @@ export class Users {
     nullable: true,
     default: 'Not specified',
   })
+  @Length(2, 50)
+  @IsOptional()
   city: string;
 
-  @ApiProperty({
-    description: 'Defines if the user has admin privileges',
-    example: true,
-  })
+  // @ApiProperty({
+  //   description: 'Defines if the user has admin privileges',
+  //   example: true,
+  // })
+  @ApiHideProperty()
   @Column({
     type: 'boolean',
     default: false,
@@ -110,6 +124,6 @@ export class Users {
     type: [Orders],
   })
   @OneToMany(() => Orders, (order) => order.user)
-  @JoinColumn({ name: 'order_id' })
+  // @JoinColumn({ name: 'order_id' })
   orders: Orders[];
 }

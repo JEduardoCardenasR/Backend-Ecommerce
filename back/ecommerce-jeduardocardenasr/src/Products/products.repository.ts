@@ -4,6 +4,7 @@ import { Categories } from '../entities/categories.entity';
 import { Products } from '../entities/products.entity';
 import { data } from '../utils/Archivo_actividad_3';
 import { MoreThan, Repository } from 'typeorm';
+import { UpdateProductDto } from 'src/dtos/update-product.dto';
 
 @Injectable()
 export class ProductsRepository {
@@ -42,7 +43,7 @@ export class ProductsRepository {
 
   async updateProduct(
     id: string,
-    product: Partial<Products>,
+    product: UpdateProductDto,
   ): Promise<Products> {
     await this.productsRepository.update(id, product);
     const updatedProduct = await this.productsRepository.findOneBy({ id });
