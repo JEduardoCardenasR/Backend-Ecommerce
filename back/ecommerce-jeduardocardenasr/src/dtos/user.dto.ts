@@ -20,6 +20,7 @@ import { MatchPassword } from '../decorators/matchPassword.decorator';
 
 export class CreateUserDto {
   @ApiProperty({
+    required: true,
     description:
       'Full name of the user (String must be between 2 and 50 characters)',
     example: 'Test Edu Cardi',
@@ -33,6 +34,7 @@ export class CreateUserDto {
   name: string;
 
   @ApiProperty({
+    required: true,
     description: 'Valid email address',
     example: 'edu.cardi@mail.com',
   })
@@ -41,6 +43,7 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
+    required: true,
     description:
       'Password (String must be between 8 and 15 characters and must contain at least 8 characters, one uppercase, one lowercase, one number, and one special character)',
     example: 'SecureP@ss123',
@@ -70,6 +73,7 @@ export class CreateUserDto {
 
   //Valida directamente dentro del DTO
   @ApiProperty({
+    required: true,
     description: 'Confirm password (Must match the password field)',
     example: 'SecureP@ss123',
   })
@@ -81,6 +85,7 @@ export class CreateUserDto {
   confirmPassword: string;
 
   @ApiProperty({
+    required: true,
     description: 'User phone number (Must be type isNumber)',
     example: 1234567890,
     type: Number,
@@ -90,6 +95,7 @@ export class CreateUserDto {
   phone: number;
 
   @ApiProperty({
+    required: true,
     description: 'User address - String must be between 2 and 255 characters',
     example: '123 Always Alive Avenue, SaltiYork, México',
     minLength: 2,

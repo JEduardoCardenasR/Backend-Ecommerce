@@ -27,7 +27,9 @@ export class FileUploadController {
 
   @Post('/uploadImage/:id')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Upload an image for a product' })
+  @ApiOperation({
+    summary: 'Upload an image for a product (Authenticated users only)',
+  })
   @ApiResponse({ status: 201, description: 'Image uploaded successfully' })
   @ApiResponse({
     status: 400,

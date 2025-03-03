@@ -18,28 +18,26 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('Orders')
+@ApiBearerAuth()
 @Controller('orders')
+@UseGuards(AuthGuard)
 export class OrdersController {
   constructor(private readonly orderService: OrdersService) {}
 
   @Post()
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new order' })
+  @ApiOperation({ summary: 'Create a new order (Authenticated users only)' })
   @ApiResponse({ status: 201, description: 'Order successfully created' })
   @ApiResponse({ status: 400, description: 'Invalid order data' })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
-  @UseGuards(AuthGuard)
   addOrderController(@Body() order: CreateOrderDto) {
     return this.orderService.addOrderService(order);
   }
 
   @Get(':id')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get an order by ID' })
+  @ApiOperation({ summary: 'Get an order by ID (Authenticated users only)' })
   @ApiResponse({ status: 200, description: 'Order retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Order not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
-  @UseGuards(AuthGuard)
   getOrderController(@Param('id', ParseUUIDPipe) id: string) {
     return this.orderService.getOrderService(id);
   }

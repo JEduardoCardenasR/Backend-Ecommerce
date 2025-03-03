@@ -75,17 +75,17 @@ export class ProductsRepository {
 
     return 'Productos agregados';
   }
+  // createProduct(newProduct: Omit<Products, 'id'>): Products {
+  //   const idNumber = this.products.length + 1;
+  //   const id = idNumber.toString();
+  //   this.products.push({ id, ...newProduct });
+  //   return { id, ...newProduct };
+  // }
+  
+  // deleteProduct(id: string): Products {
+  //   const index = this.products.findIndex((product) => product.id === id);
+  //   const deletedProduct = this.products[index];
+  //   this.products.splice(index, 1);
+  //   return deletedProduct;
+  // }
 }
-// createProduct(newProduct: Omit<Products, 'id'>): Products {
-//   const idNumber = this.products.length + 1;
-//   const id = idNumber.toString();
-//   this.products.push({ id, ...newProduct });
-//   return { id, ...newProduct };
-// }
-
-// deleteProduct(id: string): Products {
-//   const index = this.products.findIndex((product) => product.id === id);
-//   const deletedProduct = this.products[index];
-//   this.products.splice(index, 1);
-//   return deletedProduct;
-// }

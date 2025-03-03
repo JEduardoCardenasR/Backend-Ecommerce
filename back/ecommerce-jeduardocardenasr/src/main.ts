@@ -23,7 +23,7 @@ async function bootstrap() {
     .setDescription(
       'Integrative project for the backend specialization of module 4.',
     )
-    .setVersion('1.0')
+    .setVersion('1.0.0')
     .addBearerAuth() //Para acceder a la opción del token
     .build();
 

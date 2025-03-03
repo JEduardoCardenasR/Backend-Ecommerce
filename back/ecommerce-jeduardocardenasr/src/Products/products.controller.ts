@@ -103,18 +103,18 @@ export class ProductsController {
     }
     return await this.productsService.updateProductService(id, updatedProduct);
   }
+  // @Post()
+  // @UseGuards(AuthGuard)
+  // createProductController(@Body() newProduct: Products): Products | string {
+  //   if (validateProduct(newProduct)) {
+  //     return this.productsService.createProductService(newProduct);
+  //   }
+  //   return 'Producto no válido';
+  // }
+  
+  // @Delete(':id')
+  // @UseGuards(AuthGuard)
+  // deleteProductController(@Param('id', ParseUUIDPipe) id: string): Products {
+  //   return this.productsService.deleteProductService(id);
+  // }
 }
-// @Post()
-// @UseGuards(AuthGuard)
-// createProductController(@Body() newProduct: Products): Products | string {
-//   if (validateProduct(newProduct)) {
-//     return this.productsService.createProductService(newProduct);
-//   }
-//   return 'Producto no válido';
-// }
-
-// @Delete(':id')
-// @UseGuards(AuthGuard)
-// deleteProductController(@Param('id', ParseUUIDPipe) id: string): Products {
-//   return this.productsService.deleteProductService(id);
-// }

@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateOrderDto {
   @ApiProperty({
+    required: true,
     description: 'Unique identifier of the user placing the order',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
@@ -12,6 +13,7 @@ export class CreateOrderDto {
   userId: string;
 
   @ApiProperty({
+    required: true,
     description: 'List of products included in the order (Only ID is a must)',
     type: [Products],
     example: [

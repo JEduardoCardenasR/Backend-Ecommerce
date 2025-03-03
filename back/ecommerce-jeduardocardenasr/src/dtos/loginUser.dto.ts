@@ -13,6 +13,7 @@ export class LoginUserDTO extends PickType(CreateUserDto, [
   'password',
 ]) {
   @ApiProperty({
+    required: true,
     description: 'User email address',
     example: 'edu.cardi@mail.com',
   })
@@ -21,6 +22,7 @@ export class LoginUserDTO extends PickType(CreateUserDto, [
   email: string;
 
   @ApiProperty({
+    required: true,
     description: 'User password',
     example: 'SecureP@ss123',
     minLength: 8,
