@@ -59,7 +59,6 @@ export class Products {
     nullable: false,
   })
   @IsDecimal()
-  @IsPositive()
   @IsNotEmpty()
   price: number;
 
@@ -71,7 +70,7 @@ export class Products {
     type: 'int',
     nullable: false,
   })
-  @IsPositive()
+  @IsPositive() //Verificar si esta permite hacer correctamente la función
   @IsNotEmpty()
   stock: number;
 

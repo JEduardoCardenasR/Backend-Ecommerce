@@ -2,10 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   // Delete,
   Get,
   Param,
   ParseUUIDPipe,
+  Post,
   // Post,
   Put,
   Query,
@@ -28,6 +30,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UpdateProductDto } from 'src/dtos/update-product.dto';
+import { CreateProductDto } from 'src/dtos/product.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -60,13 +63,6 @@ export class ProductsController {
     );
   }
 
-  @Get('seeder')
-  @ApiOperation({ summary: 'Populate database with sample products' })
-  @ApiResponse({ status: 201, description: 'Products added successfully' })
-  addProductsController() {
-    return this.productsService.addProductsService();
-  }
-
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a product by ID' })
   @ApiResponse({ status: 200, description: 'Product found successfully' })
@@ -75,6 +71,13 @@ export class ProductsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<Products> {
     return await this.productsService.getProductByIdService(id);
+  }
+
+  @Get('seeder')
+  @ApiOperation({ summary: 'Populate database with sample products' })
+  @ApiResponse({ status: 201, description: 'Products added successfully' })
+  addProductsController() {
+    return this.productsService.addProductsService();
   }
 
   @Put(':id')
@@ -98,23 +101,46 @@ export class ProductsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedProduct: UpdateProductDto,
   ): Promise<Products> {
-    if (!validateProduct(updatedProduct)) {
-      throw new BadRequestException('Invalid Product');
-    }
     return await this.productsService.updateProductService(id, updatedProduct);
   }
-  // @Post()
-  // @UseGuards(AuthGuard)
-  // createProductController(@Body() newProduct: Products): Products | string {
-  //   if (validateProduct(newProduct)) {
-  //     return this.productsService.createProductService(newProduct);
-  //   }
-  //   return 'Producto no válido';
-  // }
-  
-  // @Delete(':id')
-  // @UseGuards(AuthGuard)
-  // deleteProductController(@Param('id', ParseUUIDPipe) id: string): Products {
-  //   return this.productsService.deleteProductService(id);
-  // }
+
+  @Post()
+  @ApiBearerAuth()
+  @ApiSecurity('roles')
+  @Roles(Rol.Administrator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Create a new product (Admin only)' })
+  @ApiResponse({ status: 201, description: 'Product created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid product data' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden: Only admins can create products',
+  })
+  @ApiBody({
+    description: 'Product data to create',
+    type: CreateProductDto,
+    required: true,
+  })
+  createProductController(@Body() newProduct: CreateProductDto) {
+    return this.productsService.createProductService(newProduct);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiSecurity('roles')
+  @Roles(Rol.Administrator) // Solo los administradores pueden eliminar productos
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Delete a product by ID (Admin only)' })
+  @ApiResponse({ status: 200, description: 'Product deleted successfully' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden: Only admins can delete products',
+  })
+  @ApiResponse({ status: 404, description: 'Product not found' })
+  @ApiResponse({ status: 400, description: 'Invalid product ID' })
+  deleteProductController(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<Products> {
+    return this.productsService.deleteProductService(id);
+  }
 }
