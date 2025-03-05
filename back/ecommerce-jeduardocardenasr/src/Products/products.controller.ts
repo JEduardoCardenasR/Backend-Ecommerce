@@ -54,8 +54,10 @@ export class ProductsController {
     totalPages: number;
     totalProducts: number;
   }> {
-    const pageNumber = page ? Number(page) : 1;
-    const limitNumber = limit ? Number(limit) : 5;
+    const pageNumber =
+      page && !isNaN(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+    const limitNumber =
+      limit && !isNaN(Number(limit)) && Number(limit) > 0 ? Number(limit) : 5;
 
     return await this.productsService.getProductsService(
       pageNumber,

@@ -10,10 +10,6 @@ export class CategoriesRepository {
     private categoriesRepository: Repository<Categories>,
   ) {}
 
-  async getCategoriesRepository() {
-    return await this.categoriesRepository.find();
-  }
-
   async addCategoriesRepository(element) {
     return await this.categoriesRepository
       .createQueryBuilder()
@@ -22,6 +18,10 @@ export class CategoriesRepository {
       .values({ name: element.category })
       .orIgnore()
       .execute();
+  }
+
+  async getCategoriesRepository() {
+    return await this.categoriesRepository.find();
   }
 
   async getCategoryByNameRepository(name: string) {

@@ -24,8 +24,9 @@ export class ProductsService {
     totalPages: number;
     totalProducts: number;
   }> {
+    const skip = (page - 1) * limit;
     const [products, totalProducts] =
-      await this.productsRepository.getProductsRepository(page, limit);
+      await this.productsRepository.getProductsRepository(skip, limit);
 
     const totalPages = Math.ceil(totalProducts / limit);
 
@@ -44,7 +45,7 @@ export class ProductsService {
 
   async addProductsService() {
     const categories =
-      await this.productsRepository.findCategoriesInProductsRepository();
+      await this.categoriesRepository.getCategoriesRepository();
 
     for (const element of data) {
       const category = categories.find((cat) => cat.name === element.category);
@@ -62,12 +63,62 @@ export class ProductsService {
     return 'Products succesfully added';
   }
 
-  //Hay que dar la posibilidad de que actualice la categoría pero hay que aplicar una lógica distinta y además hay que cambiar el dto y también habría que modificar el tema de las categorías si existe o no la categoría que se está incluyendo para agregar o no una nueva
   async updateProductService(
     id: string,
     updatedProduct: UpdateProductDto,
   ): Promise<Products> {
-    await this.productsRepository.updateProductRepository(id, updatedProduct);
+    const existingProduct =
+      await this.productsRepository.getProductByIdRepository(id);
+    if (!existingProduct) {
+      throw new NotFoundException(`Product with id ${id} was not found`);
+    }
+
+    // Convertimos updatedProduct a un objeto que sea compatible con Partial<Products>
+    const productToUpdate: Partial<Products> = {};
+
+    if (updatedProduct.name) {
+      const foundProduct =
+        await this.productsRepository.getProductByNameRepository(
+          updatedProduct.name,
+        );
+      if (foundProduct)
+        throw new BadRequestException(`Product name already exist`);
+      productToUpdate.name = updatedProduct.name;
+    }
+    if (updatedProduct.description)
+      productToUpdate.description = updatedProduct.description;
+    if (updatedProduct.price) productToUpdate.price = updatedProduct.price;
+    if (updatedProduct.imgUrl) productToUpdate.imgUrl = updatedProduct.imgUrl;
+    if (updatedProduct.stock) productToUpdate.stock = updatedProduct.stock;
+
+    if (updatedProduct.category) {
+      let newCategory =
+        await this.categoriesRepository.getCategoryByNameRepository(
+          updatedProduct.category,
+        );
+
+      if (!newCategory) {
+        const addedCategory =
+          await this.categoriesRepository.addCategoriesRepository(
+            updatedProduct,
+          );
+        if (
+          !addedCategory.identifiers ||
+          addedCategory.identifiers.length === 0
+        ) {
+          throw new BadRequestException(`Category has not been created`);
+        }
+        const addedCategoryId = addedCategory.identifiers[0].id;
+        newCategory =
+          await this.categoriesRepository.getCategoryByIdRepository(
+            addedCategoryId,
+          );
+      }
+
+      productToUpdate.category = newCategory;
+    }
+
+    await this.productsRepository.updateProductRepository(id, productToUpdate);
     return this.productsRepository.getProductByIdRepository(id);
   }
 
@@ -99,6 +150,10 @@ export class ProductsService {
         );
     }
     const productWithCategory = new Products();
+    const foundName = await this.productsRepository.getProductByNameRepository(
+      newProduct.name,
+    );
+    if (foundName) throw new BadRequestException(`Product name already exist`);
     productWithCategory.name = newProduct.name;
     productWithCategory.description = newProduct.description;
     productWithCategory.price = newProduct.price;

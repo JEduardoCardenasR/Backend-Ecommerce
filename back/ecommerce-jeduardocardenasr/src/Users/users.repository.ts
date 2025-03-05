@@ -10,18 +10,17 @@ export class UsersRepository {
     @InjectRepository(Users) private usersRepository: Repository<Users>,
   ) {}
 
-  async getUsers(page: number, limit: number) {
-    const skip = (page - 1) * limit;
-    const users = await this.usersRepository.find({
+  async getUsersRepository(skip: number, limit: number) {
+    return await this.usersRepository.find({
+      relations: { orders: true },
       take: limit,
       skip: skip,
     });
     // Si no tuviera interceptor
     // return users.map(({ password, ...userNoPassword }) => userNoPassword);
-    return users;
   }
 
-  async getUserById(id: string) {
+  async getUserByIdRepository(id: string) {
     return await this.usersRepository.findOne({
       where: { id },
       relations: {
@@ -30,29 +29,23 @@ export class UsersRepository {
     });
   }
 
-  async createUser(user: Partial<Users>): Promise<Partial<Users>> {
-    const newUser = await this.usersRepository.save(user);
-    return newUser;
+  async createUserRepository(user: Partial<Users>): Promise<Partial<Users>> {
+    return await this.usersRepository.save(user);
   }
 
-  async updateUser(id: string, user: UpdateUserDto): Promise<Partial<Users>> {
+  async updateUserRepository(
+    id: string,
+    user: UpdateUserDto,
+  ): Promise<Partial<Users>> {
     await this.usersRepository.update(id, user);
-    const updatedUser = await this.usersRepository.findOneBy({ id });
-    return updatedUser;
+    return await this.usersRepository.findOneBy({ id });
   }
 
-  async deleteUser(id: string): Promise<Partial<Users> | null> {
-    const user = await this.usersRepository.findOneBy({ id });
-
-    if (!user) {
-      return null; // No se lanza la excepción, solo se retorna null
-    }
-
-    await this.usersRepository.remove(user);
-    return user;
+  async deleteUserRepository(id: string) {
+    await this.usersRepository.delete(id);
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmailRepository(email: string) {
     return await this.usersRepository.findOneBy({ email });
   }
 }

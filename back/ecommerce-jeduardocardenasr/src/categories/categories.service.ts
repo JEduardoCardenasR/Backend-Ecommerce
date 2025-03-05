@@ -6,14 +6,14 @@ import { data } from '../utils/Archivo_actividad_3';
 export class CategoriesService {
   constructor(private categoriesRepository: CategoriesRepository) {}
 
-  getCategoriesService() {
-    return this.categoriesRepository.getCategoriesRepository();
-  }
-
   async addCategoriesService() {
     for (const element of data) {
       await this.categoriesRepository.addCategoriesRepository(element);
     }
     return 'Categorías agregadas';
+  }
+
+  getCategoriesService() {
+    return this.categoriesRepository.getCategoriesRepository();
   }
 }

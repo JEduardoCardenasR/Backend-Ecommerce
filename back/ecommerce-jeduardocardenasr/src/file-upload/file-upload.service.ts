@@ -19,7 +19,7 @@ export class FileUploadService {
     if (!product) throw new NotFoundException(`Product ${productId} not found`);
 
     //Subida de la imagen
-    const uploadedImage = await this.fileUploadRepository.uploadImage(file);
+    const uploadedImage = await this.fileUploadRepository.uploadImageRpository(file);
 
     //Actualizar el producto
     await this.productsRepository.update(productId, {

@@ -28,7 +28,7 @@ export class AuthController {
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
-  signUp(@Body() user: CreateUserDto) {
+  signUpController(@Body() user: CreateUserDto) {
     return this.authService.signUpService(user);
   }
 

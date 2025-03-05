@@ -15,9 +15,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  getAuth(): string {
-    return 'Logged in';
-  }
+  // getAuth(): string {
+  //   return 'Logged in';
+  // }
 
   //Registro de usuario:
   async signUpService(user: CreateUserDto) {
@@ -25,10 +25,10 @@ export class AuthService {
     const { email, password } = user;
 
     if (!email || !password)
-      throw new BadRequestException('Required email and password');
+      throw new BadRequestException('Email and password are required');
 
     //Verificar si extiste el usuario (mail)
-    const foundUser = await this.userRepository.getUserByEmail(email);
+    const foundUser = await this.userRepository.getUserByEmailRepository(email);
 
     if (foundUser)
       throw new BadRequestException('Email has already been registered');
@@ -47,7 +47,7 @@ export class AuthService {
 
     //Guardar el usuario en la base de datos
 
-    return await this.userRepository.createUser({
+    return await this.userRepository.createUserRepository({
       ...user,
       password: hashedPassword,
     });
@@ -56,11 +56,11 @@ export class AuthService {
   async signInService(email: string, password: string) {
     //Validamos datos
     if (!email || !password) {
-      throw new BadRequestException('Email y contraseña son requeridos');
+      throw new BadRequestException('Email and password are required');
     }
 
     //Consultamos en DB por el usuaario mediante su email:
-    const user = await this.userRepository.getUserByEmail(email);
+    const user = await this.userRepository.getUserByEmailRepository(email);
 
     //Validamos si existe el usuario:
     if (!user) {

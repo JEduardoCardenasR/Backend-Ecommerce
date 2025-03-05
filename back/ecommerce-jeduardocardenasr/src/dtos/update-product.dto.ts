@@ -3,6 +3,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Length,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -56,4 +57,13 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   imgUrl?: string;
+
+  @ApiPropertyOptional({
+    description: 'Name of the category',
+    example: 'Electronics',
+  })
+  @IsOptional()
+  @Length(2, 50)
+  @IsString()
+  category?: string;
 }

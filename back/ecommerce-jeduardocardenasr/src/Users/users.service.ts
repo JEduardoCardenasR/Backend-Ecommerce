@@ -9,11 +9,12 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   getUsersService(page: number, limit: number) {
-    return this.usersRepository.getUsers(page, limit);
+    const skip = (page - 1) * limit;
+    return this.usersRepository.getUsersRepository(skip, limit);
   }
 
   async getUserByIdService(id: string) {
-    const user = await this.usersRepository.getUserById(id);
+    const user = await this.usersRepository.getUserByIdRepository(id);
 
     if (!user) {
       throw new NotFoundException(`No se encontró el usuario con id ${id}`);
@@ -21,25 +22,26 @@ export class UsersService {
     return user;
   }
 
-  createUserService(newUser: CreateUserDto): Promise<Partial<Users>> {
-    return this.usersRepository.createUser(newUser);
-  }
+  // createUserService(newUser: CreateUserDto): Promise<Partial<Users>> {
+  //   return this.usersRepository.createUser(newUser);
+  // }
 
   updateUserService(
     id: string,
     updatedData: UpdateUserDto,
   ): Promise<Partial<Users>> {
-    return this.usersRepository.updateUser(id, updatedData);
+    return this.usersRepository.updateUserRepository(id, updatedData);
   }
 
   async deleteUserService(id: string) {
-    const user = await this.usersRepository.deleteUser(id);
+    const userToDelete = await this.usersRepository.getUserByIdRepository(id);
 
-    if (!user) {
-      throw new NotFoundException(`No se encontró el usuario con id ${id}`);
+    if (!userToDelete) {
+      throw new NotFoundException(`User with id ${id} was not found`);
     }
+    await this.usersRepository.deleteUserRepository(userToDelete.id)
 
-    return user;
+    return userToDelete;
   }
 }
 
