@@ -10,7 +10,7 @@ export class CategoriesService {
     for (const element of data) {
       await this.categoriesRepository.addCategoriesRepository(element);
     }
-    return 'Categorías agregadas';
+    return 'Categories successfully added';
   }
 
   getCategoriesService() {

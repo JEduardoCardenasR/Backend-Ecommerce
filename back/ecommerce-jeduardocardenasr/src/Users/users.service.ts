@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { Users } from '../entities/users.entity';
 import { CreateUserDto } from '../dtos/user.dto';
@@ -26,10 +30,18 @@ export class UsersService {
   //   return this.usersRepository.createUser(newUser);
   // }
 
-  updateUserService(
+  async updateUserService(
     id: string,
     updatedData: UpdateUserDto,
   ): Promise<Partial<Users>> {
+    if (updatedData.email) {
+      const foudname = await this.usersRepository.getUserByEmailRepository(
+        updatedData.email,
+      );
+      if (foudname)
+        throw new BadRequestException(`Email has already been used`);
+    }
+
     return this.usersRepository.updateUserRepository(id, updatedData);
   }
 
@@ -39,7 +51,7 @@ export class UsersService {
     if (!userToDelete) {
       throw new NotFoundException(`User with id ${id} was not found`);
     }
-    await this.usersRepository.deleteUserRepository(userToDelete.id)
+    await this.usersRepository.deleteUserRepository(userToDelete.id);
 
     return userToDelete;
   }

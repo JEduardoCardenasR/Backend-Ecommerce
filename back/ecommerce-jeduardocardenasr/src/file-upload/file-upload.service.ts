@@ -1,35 +1,49 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { FileUploadRepository } from './file-upload.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Products } from '../entities/products.entity';
-import { Repository } from 'typeorm';
+import { ProductsRepository } from 'src/products/products.repository';
 
 @Injectable()
 export class FileUploadService {
   constructor(
     private readonly fileUploadRepository: FileUploadRepository,
-    @InjectRepository(Products)
-    private readonly productsRepository: Repository<Products>,
+    private readonly productsRepository: ProductsRepository,
   ) {}
 
   async uploadImageService(file: Express.Multer.File, productId: string) {
-    const product = await this.productsRepository.findOneBy({ id: productId });
+    const product =
+      await this.productsRepository.getProductByIdRepository(productId);
 
     //Verificando que el producto exista...
     if (!product) throw new NotFoundException(`Product ${productId} not found`);
 
-    //Subida de la imagen
-    const uploadedImage = await this.fileUploadRepository.uploadImageRpository(file);
+    try {
+      //Subida de la imagen
+      const uploadedImage =
+        await this.fileUploadRepository.uploadImageRepository(file);
 
-    //Actualizar el producto
-    await this.productsRepository.update(productId, {
-      imgUrl: uploadedImage.secure_url,
-    });
+      if (!uploadedImage?.secure_url) {
+        throw new InternalServerErrorException(
+          'Image upload failed, Cloudinary did not return a valid URL.',
+        );
+      }
 
-    const findUpdatedProduct = await this.productsRepository.findOneBy({
-      id: productId,
-    });
+      product.imgUrl = uploadedImage.secure_url;
 
-    return findUpdatedProduct;
+      //Actualizar el producto
+      await this.productsRepository.updateProductRepository(productId, product);
+
+      return await this.productsRepository.getProductByIdRepository(productId);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw new InternalServerErrorException(
+        'Failed to upload image. Please try again later.',
+      );
+    }
   }
 }

@@ -3,17 +3,30 @@ import { OrdersRepository } from './orders.repository';
 import { CreateOrderDto } from '../dtos/orders.dto';
 import { Orders } from '../entities/orders.entity';
 import { OrderDetails } from '../entities/orders_detail.entity';
+import { UsersRepository } from 'src/users/users.repository';
+import { ProductsRepository } from 'src/products/products.repository';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly ordersRepository: OrdersRepository) {}
+  constructor(
+    private readonly ordersRepository: OrdersRepository,
+    private readonly usersRepository: UsersRepository,
+    private readonly productsRepository: ProductsRepository,
+  ) {}
+
+  getOrdersService(page: number, limit: number) {
+    const skip = (page - 1) * limit;
+    return this.ordersRepository.getOrdersRepository(skip, limit);
+  }
 
   async addOrderService(orderData: CreateOrderDto) {
-    const user = await this.ordersRepository.findUserById(orderData.userId);
+    const user = await this.usersRepository.getUserByIdRepository(
+      orderData.userId,
+    );
 
     if (!user) {
       throw new NotFoundException(
-        `Usuario con id ${orderData.userId} no encontrado`,
+        `User with id ${orderData.userId} was not found`,
       );
     }
 
@@ -22,13 +35,13 @@ export class OrdersService {
 
     // Lógica de productos
     for (const productData of orderData.products) {
-      const product = await this.ordersRepository.getProductById(
+      const product = await this.productsRepository.getProductByIdRepository(
         productData.id,
       );
 
       if (!product) {
         throw new NotFoundException(
-          `Producto con id ${productData.id} no encontrado`,
+          `Product with id ${productData.id} was not found`,
         );
       }
 
@@ -36,9 +49,12 @@ export class OrdersService {
       total += Number(product.price);
 
       // Actualizamos el stock
-      await this.ordersRepository.updateProductStock(
-        productData.id,
-        product.stock - 1,
+
+      product.stock -= 1;
+
+      await this.productsRepository.updateProductRepository(
+        product.id,
+        product,
       );
 
       productsArray.push(product);
@@ -72,7 +88,7 @@ export class OrdersService {
     const order = await this.ordersRepository.getOrderWithDetails(id);
 
     if (!order) {
-      throw new NotFoundException(`Orden con id ${id} no encontrada`);
+      throw new NotFoundException(`Order with id ${id} was not found`);
     }
 
     return order;

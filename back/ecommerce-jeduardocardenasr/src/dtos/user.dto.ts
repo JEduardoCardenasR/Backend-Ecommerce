@@ -142,6 +142,6 @@ export class CreateUserDto {
   //   required: false,
   // })
   @ApiHideProperty()
-  // @IsEmpty()
+  @IsEmpty()
   isAdmin?: boolean;
 }

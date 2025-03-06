@@ -42,13 +42,22 @@ export class ProductsRepository {
     });
   }
 
+  async getProductByCategoryRepository(
+    category: string,
+  ): Promise<Products | null> {
+    return await this.productsRepository.findOne({
+      where: { category: { name: category } }, // Busca por el nombre dentro de category
+      relations: ['category'], // Asegura que se cargue la relación con category
+    });
+  }
+
   async addProductRepository(product) {
     return await this.productsRepository
       .createQueryBuilder()
       .insert()
       .into(Products)
       .values(product)
-      // .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name']) // Esto es para actualizar en caso de que ya exista - name es aparte porque es un valor único
+      .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name']) // Esto es para actualizar en caso de que ya exista - name es aparte porque es un valor único
       .execute();
   }
 

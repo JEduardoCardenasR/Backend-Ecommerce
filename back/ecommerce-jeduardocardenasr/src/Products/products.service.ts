@@ -47,8 +47,28 @@ export class ProductsService {
     const categories =
       await this.categoriesRepository.getCategoriesRepository();
 
+    // Verificar duplicados dentro del array data
+    const productNames = new Set<string>();
+    for (const element of data) {
+      if (productNames.has(element.name)) {
+        throw new BadRequestException(
+          `You are trying to add two or more products with the name '${element.name}' within the same request. Names must be unique.`,
+        );
+      }
+      productNames.add(element.name);
+    }
+
     for (const element of data) {
       const category = categories.find((cat) => cat.name === element.category);
+
+      // Verificar duplicados en la base de datos
+      const foundName =
+        await this.productsRepository.getProductByNameRepository(element.name);
+      if (foundName) {
+        throw new BadRequestException(
+          `You are trying to add two or more products with the name '${element.name}'. Names of products must be unique.`,
+        );
+      }
 
       const product = new Products();
       product.name = element.name;
@@ -60,7 +80,7 @@ export class ProductsService {
 
       this.productsRepository.addProductRepository(product);
     }
-    return 'Products succesfully added';
+    return 'Products successfully added';
   }
 
   async updateProductService(
@@ -184,6 +204,15 @@ export class ProductsService {
     }
     await this.productsRepository.deleteProductRepository(productToDelete.id);
 
+    const existingProductWithCategory =
+      await this.productsRepository.getProductByCategoryRepository(
+        productToDelete.category.name,
+      );
+    if (!existingProductWithCategory) {
+      await this.categoriesRepository.deleteCategoryById(
+        productToDelete.category.id,
+      );
+    }
     return productToDelete;
   }
 }

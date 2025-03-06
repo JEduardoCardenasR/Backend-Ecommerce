@@ -5,7 +5,9 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from '../dtos/orders.dto';
@@ -13,16 +15,48 @@ import { AuthGuard } from '../Auth/guards/auth.guard';
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiQuery,
   ApiResponse,
+  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { Rol } from 'src/enums/roles.enum';
+import { RolesGuard } from 'src/Auth/guards/roles.guard';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
-@Controller('orders')
 @UseGuards(AuthGuard)
+@Controller('orders')
 export class OrdersController {
   constructor(private readonly orderService: OrdersService) {}
+
+  @Get()
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiSecurity('roles')
+  @Roles(Rol.Administrator)
+  @UseGuards(RolesGuard)
+  @ApiOperation({ summary: 'Retrieve all orders (Admin only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of orders retrieved successfully',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden: Only admins can access this data',
+  })
+  getOrdersController(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+  ) {
+    const pageNumber =
+      page && !isNaN(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+    const limitNumber =
+      limit && !isNaN(Number(limit)) && Number(limit) > 0 ? Number(limit) : 5;
+
+    return this.orderService.getOrdersService(pageNumber, limitNumber);
+  }
 
   @Post()
   @ApiOperation({ summary: 'Create a new order (Authenticated users only)' })

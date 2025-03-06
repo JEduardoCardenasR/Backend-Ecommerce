@@ -14,6 +14,8 @@ import { FileUploadService } from './file-upload.service';
 import { AuthGuard } from '../Auth/guards/auth.guard';
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
@@ -27,8 +29,22 @@ export class FileUploadController {
 
   @Post('/uploadImage/:id')
   @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: 'Upload an image for a product (Authenticated users only)',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary', // Esto indica que se trata de un archivo
+        },
+      },
+    },
   })
   @ApiResponse({ status: 201, description: 'Image uploaded successfully' })
   @ApiResponse({
@@ -36,9 +52,7 @@ export class FileUploadController {
     description: 'Invalid file format or size exceeded',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadImageController(
+  uploadImageController(
     @Param('id') productId: string,
     @UploadedFile(
       new ParseFilePipe({
@@ -55,6 +69,6 @@ export class FileUploadController {
     )
     file: Express.Multer.File,
   ) {
-    return await this.fileUploadService.uploadImageService(file, productId);
+    return this.fileUploadService.uploadImageService(file, productId);
   }
 }

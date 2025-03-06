@@ -1,14 +1,11 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
-  // Delete,
   Get,
   Param,
   ParseUUIDPipe,
   Post,
-  // Post,
   Put,
   Query,
   UseGuards,
@@ -36,6 +33,14 @@ import { CreateProductDto } from 'src/dtos/product.dto';
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
+
+  @Get('seeder')
+  @ApiOperation({ summary: 'Populate database with sample products' })
+  @ApiResponse({ status: 201, description: 'Products added successfully' })
+  @ApiResponse({ status: 500, description: 'Error while adding products' })
+  addProductsController() {
+    return this.productsService.addProductsService();
+  }
 
   @Get()
   @ApiQuery({ name: 'page', required: false })
@@ -65,6 +70,27 @@ export class ProductsController {
     );
   }
 
+  @Post()
+  @ApiBearerAuth()
+  @ApiSecurity('roles')
+  @Roles(Rol.Administrator)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiOperation({ summary: 'Create a new product (Admin only)' })
+  @ApiResponse({ status: 201, description: 'Product created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid product data' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden: Only admins can create products',
+  })
+  @ApiBody({
+    description: 'Product data to create',
+    type: CreateProductDto,
+    required: true,
+  })
+  createProductController(@Body() newProduct: CreateProductDto) {
+    return this.productsService.createProductService(newProduct);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Retrieve a product by ID' })
   @ApiResponse({ status: 200, description: 'Product found successfully' })
@@ -73,13 +99,6 @@ export class ProductsController {
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<Products> {
     return await this.productsService.getProductByIdService(id);
-  }
-
-  @Get('seeder')
-  @ApiOperation({ summary: 'Populate database with sample products' })
-  @ApiResponse({ status: 201, description: 'Products added successfully' })
-  addProductsController() {
-    return this.productsService.addProductsService();
   }
 
   @Put(':id')
@@ -104,27 +123,6 @@ export class ProductsController {
     @Body() updatedProduct: UpdateProductDto,
   ): Promise<Products> {
     return await this.productsService.updateProductService(id, updatedProduct);
-  }
-
-  @Post()
-  @ApiBearerAuth()
-  @ApiSecurity('roles')
-  @Roles(Rol.Administrator)
-  @UseGuards(AuthGuard, RolesGuard)
-  @ApiOperation({ summary: 'Create a new product (Admin only)' })
-  @ApiResponse({ status: 201, description: 'Product created successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid product data' })
-  @ApiResponse({
-    status: 403,
-    description: 'Forbidden: Only admins can create products',
-  })
-  @ApiBody({
-    description: 'Product data to create',
-    type: CreateProductDto,
-    required: true,
-  })
-  createProductController(@Body() newProduct: CreateProductDto) {
-    return this.productsService.createProductService(newProduct);
   }
 
   @Delete(':id')

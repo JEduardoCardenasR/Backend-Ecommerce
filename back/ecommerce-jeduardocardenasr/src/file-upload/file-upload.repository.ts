@@ -6,7 +6,9 @@ import * as toStream from 'buffer-to-stream';
 
 @Injectable()
 export class FileUploadRepository {
-  async uploadImageRpository(file: Express.Multer.File): Promise<UploadApiResponse> {
+  async uploadImageRepository(
+    file: Express.Multer.File,
+  ): Promise<UploadApiResponse> {
     return new Promise((resolve, reject) => {
       const upload = cloudinary.uploader.upload_stream(
         { resource_type: 'auto' },
