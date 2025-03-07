@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Categories } from '../entities/categories.entity';
 import { Products } from '../entities/products.entity';
-import { MoreThan, Repository } from 'typeorm';
-import { UpdateProductDto } from 'src/dtos/update-product.dto';
+import { InsertResult, MoreThan, Repository } from 'typeorm';
+import { UpdateProductDto } from 'src/dtos/productsDtos/update-product.dto';
 import { skip } from 'node:test';
 
 @Injectable()
@@ -14,6 +14,16 @@ export class ProductsRepository {
     @InjectRepository(Categories)
     private categoriesRepository: Repository<Categories>,
   ) {}
+
+  async addProductRepository(product: Products): Promise<InsertResult> {
+    return await this.productsRepository
+      .createQueryBuilder()
+      .insert()
+      .into(Products)
+      .values(product)
+      .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name']) // Esto es para actualizar en caso de que ya exista - name es aparte porque es un valor único
+      .execute();
+  }
 
   async getProductsRepository(
     skip: number,
@@ -42,23 +52,11 @@ export class ProductsRepository {
     });
   }
 
-  async getProductByCategoryRepository(
-    category: string,
-  ): Promise<Products | null> {
+  async getProductByCategoryRepository(category: string): Promise<Products> {
     return await this.productsRepository.findOne({
       where: { category: { name: category } }, // Busca por el nombre dentro de category
       relations: ['category'], // Asegura que se cargue la relación con category
     });
-  }
-
-  async addProductRepository(product) {
-    return await this.productsRepository
-      .createQueryBuilder()
-      .insert()
-      .into(Products)
-      .values(product)
-      .orUpdate(['description', 'price', 'imgUrl', 'stock'], ['name']) // Esto es para actualizar en caso de que ya exista - name es aparte porque es un valor único
-      .execute();
   }
 
   async updateProductRepository(id: string, product: Partial<Products>) {

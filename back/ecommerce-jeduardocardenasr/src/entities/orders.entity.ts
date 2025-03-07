@@ -33,6 +33,15 @@ export class Orders {
   @IsNotEmpty()
   date: Date;
 
+  // Nuevo campo que guardará el ID del usuario original que creó la orden
+  @ApiProperty({
+    description: 'Unique identifier of the user',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @Column({ type: 'uuid', nullable: true }) // Permitir NULL si es necesario
+  @IsNotEmpty()
+  userId: string;
+
   @ApiProperty({
     description: 'Order details associated with this order',
     type: () => OrderDetails,
@@ -41,10 +50,11 @@ export class Orders {
   orderDetails: OrderDetails;
 
   @ApiProperty({
-    description: 'User who placed the order',
+    description:
+      'User who placed the order. If the user is deleted, this field will be set to NULL.',
     type: () => Users,
   })
-  @ManyToOne(() => Users, (user) => user.orders)
+  @ManyToOne(() => Users, (user) => user.orders, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'user_id' })
-  user: Users;
+  userActive: Users;
 }

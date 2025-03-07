@@ -6,7 +6,7 @@ import {
 import { UsersRepository } from '../users/users.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { CreateUserDto } from '../dtos/user.dto';
+import { CreateUserDto } from '../dtos/usersDtos/user.dto';
 
 @Injectable()
 export class AuthService {
@@ -47,10 +47,28 @@ export class AuthService {
 
     //Guardar el usuario en la base de datos
 
-    return await this.userRepository.createUserRepository({
+    const savedUser = await this.userRepository.createUserRepository({
       ...user,
       password: hashedPassword,
     });
+
+    //Hacemos sigIn para mejorar la experiencia de usuario:
+
+    const payload = {
+      id: savedUser.id,
+      email: savedUser.email,
+      isAdmin: savedUser.isAdmin,
+    };
+
+    //Generamos el token:
+    const token = this.jwtService.sign(payload);
+
+    //Entregamos la respuesta:
+    return {
+      message: 'Successfully Signed-Up User',
+      createdUser: savedUser,
+      token,
+    };
   }
 
   async signInService(email: string, password: string) {

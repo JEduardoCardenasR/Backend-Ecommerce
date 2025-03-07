@@ -15,24 +15,6 @@ export class OrdersRepository {
     private orderDetailRepository: Repository<OrderDetails>,
   ) {}
 
-  // //Encuentra el usuario por ID (Para verificar si existe)
-  // async findUserById(userId: string): Promise<Users | null> {
-  //   return this.usersRepository.findOneBy({ id: userId });
-  // }
-
-  // // Obtiene el producto por ID
-  // async getProductById(productId: string): Promise<Products> {
-  //   return this.productsRepository.findOneBy({ id: productId });
-  // }
-
-  // // Actualiza el stock del producto
-  // async updateProductStock(productId: string, newStock: number): Promise<void> {
-  //   await this.productsRepository.update(
-  //     { id: productId },
-  //     { stock: newStock },
-  //   );
-  // }
-
   async getOrdersRepository(skip: number, limit: number) {
     return await this.ordersRepository.find({
       relations: {
@@ -206,4 +188,22 @@ export class OrdersRepository {
 //       orderDetails: true,
 //     },
 //   });
+// }
+
+// //Encuentra el usuario por ID (Para verificar si existe)
+// async findUserById(userId: string): Promise<Users | null> {
+//   return this.usersRepository.findOneBy({ id: userId });
+// }
+
+// // Obtiene el producto por ID
+// async getProductById(productId: string): Promise<Products> {
+//   return this.productsRepository.findOneBy({ id: productId });
+// }
+
+// // Actualiza el stock del producto
+// async updateProductStock(productId: string, newStock: number): Promise<void> {
+//   await this.productsRepository.update(
+//     { id: productId },
+//     { stock: newStock },
+//   );
 // }

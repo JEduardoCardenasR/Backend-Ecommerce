@@ -63,7 +63,8 @@ export class OrdersService {
     // Creamos la orden
     const order = new Orders();
     order.date = new Date();
-    order.user = user;
+    order.userId = user.id;
+    order.userActive = user;
 
     // Guardamos la orden
     const newOrder = await this.ordersRepository.saveOrder(order);

@@ -5,20 +5,21 @@ import {
 } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import { Users } from '../entities/users.entity';
-import { CreateUserDto } from '../dtos/user.dto';
-import { UpdateUserDto } from 'src/dtos/update-user.dto';
+import { UpdateUserDto } from 'src/dtos/usersDtos/update-user.dto';
+import { UserResponseDto } from 'src/dtos/usersDtos/user.response.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  getUsersService(page: number, limit: number) {
-    const skip = (page - 1) * limit;
+  getUsersService(page: number, limit: number): Promise<UserResponseDto[]> {
+    const skip: number = (page - 1) * limit;
     return this.usersRepository.getUsersRepository(skip, limit);
   }
 
-  async getUserByIdService(id: string) {
-    const user = await this.usersRepository.getUserByIdRepository(id);
+  async getUserByIdService(id: string): Promise<UserResponseDto> {
+    const user: UserResponseDto =
+      await this.usersRepository.getUserByIdRepository(id);
 
     if (!user) {
       throw new NotFoundException(`No se encontró el usuario con id ${id}`);
@@ -33,11 +34,10 @@ export class UsersService {
   async updateUserService(
     id: string,
     updatedData: UpdateUserDto,
-  ): Promise<Partial<Users>> {
+  ): Promise<UserResponseDto> {
     if (updatedData.email) {
-      const foudname = await this.usersRepository.getUserByEmailRepository(
-        updatedData.email,
-      );
+      const foudname: UserResponseDto =
+        await this.usersRepository.getUserByEmailRepository(updatedData.email);
       if (foudname)
         throw new BadRequestException(`Email has already been used`);
     }
@@ -45,8 +45,9 @@ export class UsersService {
     return this.usersRepository.updateUserRepository(id, updatedData);
   }
 
-  async deleteUserService(id: string) {
-    const userToDelete = await this.usersRepository.getUserByIdRepository(id);
+  async deleteUserService(id: string): Promise<UserResponseDto> {
+    const userToDelete: UserResponseDto =
+      await this.usersRepository.getUserByIdRepository(id);
 
     if (!userToDelete) {
       throw new NotFoundException(`User with id ${id} was not found`);

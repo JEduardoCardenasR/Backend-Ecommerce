@@ -18,7 +18,6 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '../Auth/guards/auth.guard';
 // import { validateUser } from '../utils/users.validate';
 import { Users } from '../entities/users.entity';
-import { CreateUserDto } from '../dtos/user.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { Rol } from '../enums/roles.enum';
 import { RolesGuard } from '../Auth/guards/roles.guard';
@@ -32,7 +31,8 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { UpdateUserDto } from 'src/dtos/update-user.dto';
+import { UpdateUserDto } from 'src/dtos/usersDtos/update-user.dto';
+import { UserResponseDto } from 'src/dtos/usersDtos/user.response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -62,10 +62,10 @@ export class UsersController {
   getUsersController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ) {
-    const pageNumber =
+  ): Promise<UserResponseDto[]> {
+    const pageNumber: number =
       page && !isNaN(Number(page)) && Number(page) > 0 ? Number(page) : 1;
-    const limitNumber =
+    const limitNumber: number =
       limit && !isNaN(Number(limit)) && Number(limit) > 0 ? Number(limit) : 5;
 
     return this.userService.getUsersService(pageNumber, limitNumber);
@@ -78,7 +78,9 @@ export class UsersController {
   @ApiOperation({ summary: 'Retrieve a user by ID (Authenticated users only)' })
   @ApiResponse({ status: 200, description: 'User retrieved successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
-  getUserByIdController(@Param('id', ParseUUIDPipe) id: string) {
+  getUserByIdController(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<UserResponseDto> {
     return this.userService.getUserByIdService(id);
   }
 
@@ -104,7 +106,7 @@ export class UsersController {
   updateUserController(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedData: UpdateUserDto,
-  ): Promise<Partial<Users>> {
+  ): Promise<UserResponseDto> {
     return this.userService.updateUserService(id, updatedData);
   }
 
@@ -117,7 +119,7 @@ export class UsersController {
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
   deleteUserController(
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<Partial<Users>> {
+  ): Promise<UserResponseDto> {
     return this.userService.deleteUserService(id);
   }
 }

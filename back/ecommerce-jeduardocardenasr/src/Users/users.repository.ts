@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from '../entities/users.entity';
 import { Repository } from 'typeorm';
-import { UpdateUserDto } from 'src/dtos/update-user.dto';
+import { UpdateUserDto } from 'src/dtos/usersDtos/update-user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -10,7 +10,7 @@ export class UsersRepository {
     @InjectRepository(Users) private usersRepository: Repository<Users>,
   ) {}
 
-  async getUsersRepository(skip: number, limit: number) {
+  async getUsersRepository(skip: number, limit: number): Promise<Users[]> {
     return await this.usersRepository.find({
       relations: { orders: true },
       take: limit,
@@ -20,7 +20,7 @@ export class UsersRepository {
     // return users.map(({ password, ...userNoPassword }) => userNoPassword);
   }
 
-  async getUserByIdRepository(id: string) {
+  async getUserByIdRepository(id: string): Promise<Users> {
     return await this.usersRepository.findOne({
       where: { id },
       relations: {
@@ -33,10 +33,7 @@ export class UsersRepository {
     return await this.usersRepository.save(user);
   }
 
-  async updateUserRepository(
-    id: string,
-    user: UpdateUserDto,
-  ): Promise<Partial<Users>> {
+  async updateUserRepository(id: string, user: UpdateUserDto): Promise<Users> {
     await this.usersRepository.update(id, user);
     return await this.usersRepository.findOneBy({ id });
   }
@@ -45,7 +42,7 @@ export class UsersRepository {
     await this.usersRepository.delete(id);
   }
 
-  async getUserByEmailRepository(email: string) {
+  async getUserByEmailRepository(email: string): Promise<Users> {
     return await this.usersRepository.findOneBy({ email });
   }
 }

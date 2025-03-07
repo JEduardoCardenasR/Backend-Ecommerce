@@ -67,7 +67,6 @@ export class Users {
   })
   // @IsMobilePhone('any')
   @IsNotEmpty()
-  @IsNotEmpty()
   phone: number;
 
   @ApiProperty({
@@ -92,7 +91,7 @@ export class Users {
   })
   @Length(2, 50)
   @IsOptional()
-  country: string;
+  country?: string;
 
   @ApiPropertyOptional({
     description: 'City of the user',
@@ -106,7 +105,7 @@ export class Users {
   })
   @Length(2, 50)
   @IsOptional()
-  city: string;
+  city?: string;
 
   // @ApiProperty({
   //   description: 'Defines if the user has admin privileges',
@@ -123,7 +122,7 @@ export class Users {
     description: 'List of orders placed by the user',
     type: [Orders],
   })
-  @OneToMany(() => Orders, (order) => order.user)
+  @OneToMany(() => Orders, (order) => order.userActive)
   // @JoinColumn({ name: 'order_id' })
   orders: Orders[];
 }

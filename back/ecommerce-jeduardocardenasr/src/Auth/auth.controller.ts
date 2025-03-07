@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../dtos/user.dto';
+import { CreateUserDto } from '../dtos/usersDtos/user.dto';
 import { ExcludeFieldsInterceptor } from '../interceptors/exclude-password.interceptor';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { LoginUserDTO } from '../dtos/loginUser.dto';
+import { LoginUserDTO } from '../dtos/usersDtos/loginUser.dto';
 import { Users } from '../entities/users.entity';
 import { OrderDetails } from '../entities/orders_detail.entity';
 import { Orders } from '../entities/orders.entity';

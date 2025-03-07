@@ -26,8 +26,9 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { UpdateProductDto } from 'src/dtos/update-product.dto';
-import { CreateProductDto } from 'src/dtos/product.dto';
+import { UpdateProductDto } from 'src/dtos/productsDtos/update-product.dto';
+import { CreateProductDto } from 'src/dtos/productsDtos/product.dto';
+import { ProductResponseDto } from 'src/dtos/productsDtos/product.response.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -38,7 +39,7 @@ export class ProductsController {
   @ApiOperation({ summary: 'Populate database with sample products' })
   @ApiResponse({ status: 201, description: 'Products added successfully' })
   @ApiResponse({ status: 500, description: 'Error while adding products' })
-  addProductsController() {
+  addProductsController(): Promise<string> {
     return this.productsService.addProductsService();
   }
 
@@ -55,13 +56,13 @@ export class ProductsController {
     @Query('page') page?: string,
     @Query('limit') limit?: string,
   ): Promise<{
-    products: Products[];
+    products: ProductResponseDto[];
     totalPages: number;
     totalProducts: number;
   }> {
-    const pageNumber =
+    const pageNumber: number =
       page && !isNaN(Number(page)) && Number(page) > 0 ? Number(page) : 1;
-    const limitNumber =
+    const limitNumber: number =
       limit && !isNaN(Number(limit)) && Number(limit) > 0 ? Number(limit) : 5;
 
     return await this.productsService.getProductsService(
@@ -87,7 +88,9 @@ export class ProductsController {
     type: CreateProductDto,
     required: true,
   })
-  createProductController(@Body() newProduct: CreateProductDto) {
+  createProductController(
+    @Body() newProduct: CreateProductDto,
+  ): Promise<ProductResponseDto> {
     return this.productsService.createProductService(newProduct);
   }
 
@@ -97,7 +100,7 @@ export class ProductsController {
   @ApiResponse({ status: 404, description: 'Product not found' })
   async getProductByIdController(
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<Products> {
+  ): Promise<ProductResponseDto> {
     return await this.productsService.getProductByIdService(id);
   }
 
@@ -121,7 +124,7 @@ export class ProductsController {
   async updateProductController(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedProduct: UpdateProductDto,
-  ): Promise<Products> {
+  ): Promise<ProductResponseDto> {
     return await this.productsService.updateProductService(id, updatedProduct);
   }
 
@@ -140,7 +143,7 @@ export class ProductsController {
   @ApiResponse({ status: 400, description: 'Invalid product ID' })
   deleteProductController(
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<Products> {
+  ): Promise<ProductResponseDto> {
     return this.productsService.deleteProductService(id);
   }
 }
