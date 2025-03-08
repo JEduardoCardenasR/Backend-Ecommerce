@@ -28,7 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { UpdateProductDto } from 'src/dtos/productsDtos/update-product.dto';
 import { CreateProductDto } from 'src/dtos/productsDtos/product.dto';
-import { ProductResponseDto } from 'src/dtos/productsDtos/product.response.dto';
+import { ProductResponseDto } from 'src/dtos/productsDtos/product-response.dto';
 
 @ApiTags('Products')
 @Controller('products')

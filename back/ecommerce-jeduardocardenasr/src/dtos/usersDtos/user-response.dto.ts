@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
+import { Orders } from 'src/entities/orders.entity';
 
 export class UserResponseDto {
   @ApiProperty({
@@ -60,7 +61,7 @@ export class UserResponseDto {
 
   @ApiProperty({
     description: 'List of orders placed by the user',
-    type: [Object],
+    type: () => [Orders],
   })
-  orders: any[];
+  orders: Orders[];
 }

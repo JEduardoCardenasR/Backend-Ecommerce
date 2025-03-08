@@ -31,8 +31,8 @@ import {
   ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
-import { UpdateUserDto } from 'src/dtos/usersDtos/update-user.dto';
-import { UserResponseDto } from 'src/dtos/usersDtos/user.response.dto';
+import { UpdateUserDto } from '../dtos/usersDtos/update-user.dto';
+import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()

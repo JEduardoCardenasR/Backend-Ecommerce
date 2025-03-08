@@ -6,7 +6,7 @@ import {
 import { UsersRepository } from './users.repository';
 import { Users } from '../entities/users.entity';
 import { UpdateUserDto } from 'src/dtos/usersDtos/update-user.dto';
-import { UserResponseDto } from 'src/dtos/usersDtos/user.response.dto';
+import { UserResponseDto } from 'src/dtos/usersDtos/user-response.dto';
 
 @Injectable()
 export class UsersService {

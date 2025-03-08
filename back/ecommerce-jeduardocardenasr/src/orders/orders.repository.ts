@@ -15,7 +15,7 @@ export class OrdersRepository {
     private orderDetailRepository: Repository<OrderDetails>,
   ) {}
 
-  async getOrdersRepository(skip: number, limit: number) {
+  async getOrdersRepository(skip: number, limit: number): Promise<Orders[]> {
     return await this.ordersRepository.find({
       relations: {
         orderDetails: {
@@ -28,17 +28,19 @@ export class OrdersRepository {
   }
 
   // Guardar la orden
-  async saveOrder(order: Orders): Promise<Orders> {
+  async saveOrderRepository(order: Orders): Promise<Orders> {
     return this.ordersRepository.save(order);
   }
 
   // Guardar los detalles de la orden
-  async saveOrderDetail(orderDetail: OrderDetails): Promise<OrderDetails> {
+  async saveOrderDetailRepository(
+    orderDetail: OrderDetails,
+  ): Promise<OrderDetails> {
     return this.orderDetailRepository.save(orderDetail);
   }
 
   // Devuelve la orden con los detalles
-  async getOrderWithDetails(id: string): Promise<Orders> {
+  async getOrderByIdRespository(id: string): Promise<Orders> {
     return this.ordersRepository.findOne({
       where: { id },
       relations: {

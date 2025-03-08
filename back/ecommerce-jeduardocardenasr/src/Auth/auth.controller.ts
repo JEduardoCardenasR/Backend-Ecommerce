@@ -4,10 +4,8 @@ import { CreateUserDto } from '../dtos/usersDtos/user.dto';
 import { ExcludeFieldsInterceptor } from '../interceptors/exclude-password.interceptor';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginUserDTO } from '../dtos/usersDtos/loginUser.dto';
-import { Users } from '../entities/users.entity';
-import { OrderDetails } from '../entities/orders_detail.entity';
-import { Orders } from '../entities/orders.entity';
-import { Categories } from '../entities/categories.entity';
+import { SignUpResponseDto } from '../dtos/authDtos/sign-up-response.dto';
+import { SignInResponseDto } from '../dtos/authDtos/sign-in-response.dto';
 // import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
 
 @ApiTags('Auth')
@@ -28,7 +26,7 @@ export class AuthController {
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
-  signUpController(@Body() user: CreateUserDto) {
+  signUpController(@Body() user: CreateUserDto): Promise<SignUpResponseDto> {
     return this.authService.signUpService(user);
   }
 
@@ -39,26 +37,12 @@ export class AuthController {
     description: 'Login successful, returns JWT token',
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  signInController(@Body() credentials: LoginUserDTO) {
-    const { email, password } = credentials;
+  signInController(
+    @Body() credentials: LoginUserDTO,
+  ): Promise<SignInResponseDto> {
+    const { email, password }: { email: string; password: string } =
+      credentials;
 
     return this.authService.signInService(email, password);
-  }
-
-  @Post()
-  @ApiOperation({ summary: 'This is just a test route' })
-  entitiesController(
-    @Body() user: Users,
-    @Body() orders: Orders,
-    @Body() ordersDetails: OrderDetails,
-    @Body() categories: Categories,
-  ) {
-    const entitiesObject = {
-      user: user,
-      orders_detail: ordersDetails,
-      orders: orders,
-      categories: categories,
-    };
-    return entitiesObject;
   }
 }

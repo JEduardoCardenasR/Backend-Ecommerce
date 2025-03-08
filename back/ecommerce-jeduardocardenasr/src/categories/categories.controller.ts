@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CategoryResponseDto } from 'src/dtos/categoriesDtos/category-response.dto';
 
 @ApiTags('Categories')
 @Controller('categories')
@@ -11,7 +12,7 @@ export class CategoriesController {
   @ApiOperation({ summary: 'Add initial categories to the database' })
   @ApiResponse({ status: 201, description: 'Categories added successfully' })
   @ApiResponse({ status: 500, description: 'Error while adding categories' })
-  addCategoriesController() {
+  addCategoriesController(): Promise<string> {
     return this.categoriesService.addCategoriesService();
   }
 
@@ -22,7 +23,7 @@ export class CategoriesController {
     description: 'List of categories retrieved successfully',
   })
   @ApiResponse({ status: 404, description: 'No categories found' })
-  getCategoriesController() {
+  getCategoriesController(): Promise<CategoryResponseDto[]> {
     return this.categoriesService.getCategoriesService();
   }
 }

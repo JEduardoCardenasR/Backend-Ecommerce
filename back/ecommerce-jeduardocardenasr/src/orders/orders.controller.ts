@@ -10,7 +10,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { CreateOrderDto } from '../dtos/orders.dto';
+import { CreateOrderDto } from '../dtos/ordersDtos/orders.dto';
 import { AuthGuard } from '../Auth/guards/auth.guard';
 import {
   ApiBearerAuth,
@@ -23,6 +23,7 @@ import {
 import { Roles } from 'src/decorators/roles.decorator';
 import { Rol } from 'src/enums/roles.enum';
 import { RolesGuard } from 'src/Auth/guards/roles.guard';
+import { OrderResponseDto } from 'src/dtos/ordersDtos/order-response.dto';
 
 @ApiTags('Orders')
 @ApiBearerAuth()
@@ -49,10 +50,10 @@ export class OrdersController {
   getOrdersController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
-  ) {
-    const pageNumber =
+  ): Promise<OrderResponseDto[]> {
+    const pageNumber: number =
       page && !isNaN(Number(page)) && Number(page) > 0 ? Number(page) : 1;
-    const limitNumber =
+    const limitNumber: number =
       limit && !isNaN(Number(limit)) && Number(limit) > 0 ? Number(limit) : 5;
 
     return this.orderService.getOrdersService(pageNumber, limitNumber);
@@ -63,7 +64,7 @@ export class OrdersController {
   @ApiResponse({ status: 201, description: 'Order successfully created' })
   @ApiResponse({ status: 400, description: 'Invalid order data' })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
-  addOrderController(@Body() order: CreateOrderDto) {
+  addOrderController(@Body() order: CreateOrderDto): Promise<OrderResponseDto> {
     return this.orderService.addOrderService(order);
   }
 
@@ -72,8 +73,10 @@ export class OrdersController {
   @ApiResponse({ status: 200, description: 'Order retrieved successfully' })
   @ApiResponse({ status: 404, description: 'Order not found' })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
-  getOrderController(@Param('id', ParseUUIDPipe) id: string) {
-    return this.orderService.getOrderService(id);
+  getOrderByIdController(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<OrderResponseDto> {
+    return this.orderService.getOrderByIdService(id);
   }
 }
 

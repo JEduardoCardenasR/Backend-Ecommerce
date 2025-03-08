@@ -1,4 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Categories } from 'src/entities/categories.entity';
+import { OrderDetails } from 'src/entities/orders_detail.entity';
 
 export class ProductResponseDto {
   @ApiProperty({
@@ -39,13 +41,13 @@ export class ProductResponseDto {
 
   @ApiProperty({
     description: 'Category to which the product belongs',
-    type: () => Object,
+    type: () => Categories,
   })
-  category: any;
+  category: Categories;
 
   @ApiProperty({
     description: 'List of order details that include this product',
-    type: [Object],
+    type: () => [OrderDetails],
   })
-  orderDetails: any[];
+  orderDetails: OrderDetails[];
 }

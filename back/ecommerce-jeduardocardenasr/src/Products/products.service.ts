@@ -8,8 +8,8 @@ import { Products } from '../entities/products.entity';
 import { UpdateProductDto } from 'src/dtos/productsDtos/update-product.dto';
 import { data } from '../utils/Archivo_actividad_3';
 import { CategoriesRepository } from 'src/categories/categories.repository';
-import { ProductResponseDto } from 'src/dtos/productsDtos/product.response.dto';
-import { CategoryResponseDto } from 'src/dtos/categoriesDtos/category.response';
+import { ProductResponseDto } from 'src/dtos/productsDtos/product-response.dto';
+import { CategoryResponseDto } from 'src/dtos/categoriesDtos/category-response.dto';
 import { CreateProductDto } from 'src/dtos/productsDtos/product.dto';
 import { InsertResult } from 'typeorm';
 
@@ -180,9 +180,9 @@ export class ProductsService {
 
       if (!newCategory) {
         const addedCategory: InsertResult =
-          await this.categoriesRepository.addCategoriesRepository(
-            updatedProduct,
-          );
+          await this.categoriesRepository.addCategoriesRepository({
+            category: updatedProduct.category, // Se pasa el objeto correcto para que no haya problemas con el tipo que recibe el método en el repositorio
+          });
         if (
           !addedCategory.identifiers ||
           addedCategory.identifiers.length === 0
@@ -217,7 +217,7 @@ export class ProductsService {
         productToDelete.category.name,
       );
     if (!existingProductWithCategory) {
-      await this.categoriesRepository.deleteCategoryById(
+      await this.categoriesRepository.deleteCategoryByIdRepository(
         productToDelete.category.id,
       );
     }
