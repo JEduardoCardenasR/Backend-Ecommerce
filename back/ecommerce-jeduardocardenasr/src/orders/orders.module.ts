@@ -5,11 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderDetails } from '../entities/orders_detail.entity';
 import { Orders } from '../entities/orders.entity';
 import { Users } from '../entities/users.entity';
-import { Products } from '../entities/products.entity';
 import { OrdersRepository } from './orders.repository';
-import { UsersRepository } from 'src/users/users.repository';
-import { ProductsRepository } from 'src/products/products.repository';
-import { ProductsModule } from 'src/products/products.module';
+import { UsersRepository } from '../users/users.repository';
+import { ProductsModule } from '../products/products.module';
 
 @Module({
   imports: [

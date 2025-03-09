@@ -8,9 +8,10 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../dtos/usersDtos/user.dto';
 import { SignUpResponseDto } from '../dtos/authDtos/sign-up-response.dto';
-import { UserResponseDto } from 'src/dtos/usersDtos/user-response.dto';
-import { IJwtPayload } from 'src/interfaces/jwtPayload.interface';
-import { SignInResponseDto } from 'src/dtos/authDtos/sign-in-response.dto';
+import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
+import { IJwtPayload } from '../interfaces/jwtPayload.interface';
+import { SignInResponseDto } from '../dtos/authDtos/sign-in-response.dto';
+import { LoginUserDTO } from '../dtos/usersDtos/loginUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,14 +20,10 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  // getAuth(): string {
-  //   return 'Logged in';
-  // }
-
-  //Registro de usuario:
+  // CREATE A USER
   async signUpService(user: CreateUserDto): Promise<SignUpResponseDto> {
     //Validación de datos
-    const { email, password }: { email: string; password: string } = user;
+    const { email, password }: LoginUserDTO = user;
 
     if (!email || !password)
       throw new BadRequestException('Email and password are required');
@@ -37,10 +34,6 @@ export class AuthService {
 
     if (foundUser)
       throw new BadRequestException('Email has already been registered');
-
-    //Verificar si existen las contraseñas (Ya se está validando en el DTO)
-    // if (password !== user.confirmPassword)
-    //   throw new BadRequestException('Passwords do not match');
 
     //Proceso de registro
 
@@ -77,6 +70,7 @@ export class AuthService {
     };
   }
 
+  // LOG IN A USER
   async signInService(
     email: string,
     password: string,

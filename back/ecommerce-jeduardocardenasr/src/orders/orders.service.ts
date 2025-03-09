@@ -1,14 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrdersRepository } from './orders.repository';
 import { CreateOrderDto } from '../dtos/ordersDtos/orders.dto';
 import { Orders } from '../entities/orders.entity';
 import { OrderDetails } from '../entities/orders_detail.entity';
-import { UsersRepository } from 'src/users/users.repository';
-import { ProductsRepository } from 'src/products/products.repository';
-import { OrderResponseDto } from 'src/dtos/ordersDtos/order-response.dto';
-import { UserResponseDto } from 'src/dtos/usersDtos/user-response.dto';
-import { ProductResponseDto } from 'src/dtos/productsDtos/product-response.dto';
-import { OrderDetailsResponseDto } from 'src/dtos/ordersDtos/orderDetails-response.dto';
+import { UsersRepository } from '../users/users.repository';
+import { ProductsRepository } from '../products/products.repository';
+import { OrderResponseDto } from '../dtos/ordersDtos/order-response.dto';
+import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
+import { ProductResponseDto } from '../dtos/productsDtos/product-response.dto';
+import { OrderDetailsResponseDto } from '../dtos/ordersDtos/orderDetails-response.dto';
 
 @Injectable()
 export class OrdersService {
@@ -18,11 +22,24 @@ export class OrdersService {
     private readonly productsRepository: ProductsRepository,
   ) {}
 
-  getOrdersService(page: number, limit: number): Promise<OrderResponseDto[]> {
+  //GET ALL ORDERS
+  async getOrdersService(
+    page: number,
+    limit: number,
+  ): Promise<OrderResponseDto[]> {
     const skip: number = (page - 1) * limit;
-    return this.ordersRepository.getOrdersRepository(skip, limit);
+
+    const orders: OrderResponseDto[] =
+      await this.ordersRepository.getOrdersRepository(skip, limit);
+
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException('No orders found');
+    }
+
+    return orders;
   }
 
+  // CREATE ORDERS
   async addOrderService(orderData: CreateOrderDto): Promise<OrderResponseDto> {
     const user: UserResponseDto =
       await this.usersRepository.getUserByIdRepository(orderData.userId);
@@ -44,6 +61,12 @@ export class OrdersService {
       if (!product) {
         throw new NotFoundException(
           `Product with id ${productData.id} was not found`,
+        );
+      }
+
+      if (product.stock <= 0) {
+        throw new ConflictException(
+          `Product '${product.name}' (ID: ${product.id}) is out of stock and cannot be added to an order.`,
         );
       }
 
@@ -79,7 +102,6 @@ export class OrdersService {
 
     const savedOrderDetail: OrderDetailsResponseDto =
       await this.ordersRepository.saveOrderDetailRepository(orderDetail);
-    console.log(savedOrderDetail);
 
     // Luego asignar los productos y guardar de nuevo. Esto asegura que OrderDetails primero exista en la BD antes de intentar relacionarlo con productos.
     savedOrderDetail.products = productsArray;
@@ -89,6 +111,7 @@ export class OrdersService {
     return this.ordersRepository.getOrderByIdRespository(newOrder.id);
   }
 
+  // GET ORDER BY ID
   async getOrderByIdService(id: string): Promise<OrderResponseDto> {
     const order: OrderResponseDto =
       await this.ordersRepository.getOrderByIdRespository(id);
@@ -100,11 +123,3 @@ export class OrdersService {
     return order;
   }
 }
-
-// addOrderService(orderData: CreateOrderDto) {
-//   return this.ordersRepository.addOrder(orderData);
-// }
-
-// addOrderService(userId: string, products: any) {
-//   return this.ordersRepository.addOrder(userId, products);
-// }

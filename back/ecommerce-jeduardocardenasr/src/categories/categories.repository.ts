@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Categories } from '../entities/categories.entity';
 import { InsertResult, Repository } from 'typeorm';
-import { Products } from 'src/entities/products.entity';
-import { CategoryResponseDto } from 'src/dtos/categoriesDtos/category-response.dto';
 
 @Injectable()
 export class CategoriesRepository {
@@ -12,6 +10,7 @@ export class CategoriesRepository {
     private categoriesRepository: Repository<Categories>,
   ) {}
 
+  // UPLOAD PRODUCTS
   async addCategoriesRepository(element: {
     category: string;
   }): Promise<InsertResult> {
@@ -24,18 +23,22 @@ export class CategoriesRepository {
       .execute();
   }
 
+  //GET ALL CATEGORIES
   async getCategoriesRepository(): Promise<Categories[]> {
     return await this.categoriesRepository.find();
   }
 
-  async getCategoryByNameRepository(name: string): Promise<Categories> {
-    return await this.categoriesRepository.findOneBy({ name });
-  }
-
+  //GET CATEGORY BY ID
   async getCategoryByIdRepository(id: string): Promise<Categories> {
     return await this.categoriesRepository.findOneBy({ id });
   }
 
+  //GET CATEGORY BY NAME
+  async getCategoryByNameRepository(name: string): Promise<Categories> {
+    return await this.categoriesRepository.findOneBy({ name });
+  }
+
+  //DELETE CATEGORY BY ID
   async deleteCategoryByIdRepository(id: string) {
     await this.categoriesRepository.delete(id);
   }

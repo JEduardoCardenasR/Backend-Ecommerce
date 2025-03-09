@@ -1,6 +1,10 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ApiHideProperty,
+  ApiProperty,
+  ApiPropertyOptional,
+} from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { Orders } from 'src/entities/orders.entity';
+import { Orders } from '../../entities/orders.entity';
 
 export class UserResponseDto {
   @ApiProperty({
@@ -53,10 +57,7 @@ export class UserResponseDto {
   @IsOptional()
   city?: string;
 
-  @ApiProperty({
-    description: 'Defines if the user has admin privileges',
-    example: true,
-  })
+  @ApiHideProperty()
   isAdmin: boolean;
 
   @ApiProperty({

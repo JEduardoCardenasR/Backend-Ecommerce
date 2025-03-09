@@ -1,16 +1,17 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { ProductsRepository } from './products.repository';
 import { Products } from '../entities/products.entity';
-import { UpdateProductDto } from 'src/dtos/productsDtos/update-product.dto';
+import { UpdateProductDto } from '../dtos/productsDtos/update-product.dto';
 import { data } from '../utils/Archivo_actividad_3';
-import { CategoriesRepository } from 'src/categories/categories.repository';
-import { ProductResponseDto } from 'src/dtos/productsDtos/product-response.dto';
-import { CategoryResponseDto } from 'src/dtos/categoriesDtos/category-response.dto';
-import { CreateProductDto } from 'src/dtos/productsDtos/product.dto';
+import { CategoriesRepository } from '../categories/categories.repository';
+import { ProductResponseDto } from '../dtos/productsDtos/product-response.dto';
+import { CategoryResponseDto } from '../dtos/categoriesDtos/category-response.dto';
+import { CreateProductDto } from '../dtos/productsDtos/product.dto';
 import { InsertResult } from 'typeorm';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class ProductsService {
     private readonly categoriesRepository: CategoriesRepository,
   ) {}
 
+  // UPLOAD PRODUCTS
   async addProductsService(): Promise<string> {
     const categories: CategoryResponseDto[] =
       await this.categoriesRepository.getCategoriesRepository();
@@ -62,6 +64,7 @@ export class ProductsService {
     return 'Products successfully added';
   }
 
+  //GET ALL PRODUCTS
   async getProductsService(
     page: number,
     limit: number,
@@ -71,14 +74,20 @@ export class ProductsService {
     totalProducts: number;
   }> {
     const skip: number = (page - 1) * limit;
+
     const [products, totalProducts]: [ProductResponseDto[], number] =
       await this.productsRepository.getProductsRepository(skip, limit);
+
+    if (!products || products.length === 0) {
+      throw new NotFoundException('No products found');
+    }
 
     const totalPages: number = Math.ceil(totalProducts / limit);
 
     return { products, totalPages, totalProducts };
   }
 
+  // CREATE PRODUCTS
   async createProductService(
     newProduct: CreateProductDto,
   ): Promise<ProductResponseDto> {
@@ -111,7 +120,7 @@ export class ProductsService {
     const productWithCategory = new Products();
     const foundName: ProductResponseDto =
       await this.productsRepository.getProductByNameRepository(newProduct.name);
-    if (foundName) throw new BadRequestException(`Product name already exist`);
+    if (foundName) throw new ConflictException(`Product name already exist`);
     productWithCategory.name = newProduct.name;
     productWithCategory.description = newProduct.description;
     productWithCategory.price = newProduct.price;
@@ -133,6 +142,7 @@ export class ProductsService {
     return savedProduct;
   }
 
+  // GET PRODUCT BY ID
   async getProductByIdService(id: string): Promise<ProductResponseDto> {
     const product: ProductResponseDto =
       await this.productsRepository.getProductByIdRepository(id);
@@ -144,6 +154,7 @@ export class ProductsService {
     return product;
   }
 
+  // UPDATE PRODUCT BY ID
   async updateProductService(
     id: string,
     updatedProduct: UpdateProductDto,
@@ -152,6 +163,17 @@ export class ProductsService {
       await this.productsRepository.getProductByIdRepository(id);
     if (!existingProduct) {
       throw new NotFoundException(`Product with id ${id} was not found`);
+    }
+
+    // Validar si al menos un campo fue enviado
+    if (
+      Object.values(updatedProduct).every(
+        (value) => value === undefined || value === null,
+      )
+    ) {
+      throw new BadRequestException(
+        'At least one field must be provided for update.',
+      );
     }
 
     // Convertimos updatedProduct a un objeto que sea compatible con Partial<Products>
@@ -163,7 +185,7 @@ export class ProductsService {
           updatedProduct.name,
         );
       if (foundProduct)
-        throw new BadRequestException(`Product name already exist`);
+        throw new ConflictException(`Product name already exist`);
       productToUpdate.name = updatedProduct.name;
     }
     if (updatedProduct.description)
@@ -203,6 +225,7 @@ export class ProductsService {
     return this.productsRepository.getProductByIdRepository(id);
   }
 
+  // DELETE PRODUCT BY ID
   async deleteProductService(id: string): Promise<ProductResponseDto> {
     const productToDelete: ProductResponseDto =
       await this.productsRepository.getProductByIdRepository(id);

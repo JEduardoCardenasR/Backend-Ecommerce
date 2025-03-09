@@ -9,16 +9,12 @@ import {
 import { Categories } from './categories.entity';
 import { OrderDetails } from './orders_detail.entity';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { IsDecimal, IsNotEmpty, IsPositive, Length } from 'class-validator';
+import { IsDecimal, IsNotEmpty, Length } from 'class-validator';
 
 @Entity({
   name: 'products',
 })
 export class Products {
-  // @ApiProperty({
-  //   description: 'Unique identifier of the product',
-  //   example: '123e4567-e89b-12d3-a456-426614174000',
-  // })
   @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -70,7 +66,6 @@ export class Products {
     type: 'int',
     nullable: false,
   })
-  @IsPositive() //Verificar si esta permite hacer correctamente la función
   @IsNotEmpty()
   stock: number;
 
@@ -80,7 +75,8 @@ export class Products {
   })
   @Column({
     type: 'text',
-    default: '../assets/images/DefaultImage.jpg',
+    default:
+      'https://takka.mx/wp-content/uploads/2024/11/TakkaMx-Proximamente.png',
   })
   @IsNotEmpty()
   imgUrl: string;

@@ -3,8 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Categories } from '../entities/categories.entity';
 import { Products } from '../entities/products.entity';
 import { InsertResult, MoreThan, Repository } from 'typeorm';
-import { UpdateProductDto } from 'src/dtos/productsDtos/update-product.dto';
-import { skip } from 'node:test';
 
 @Injectable()
 export class ProductsRepository {
@@ -15,6 +13,7 @@ export class ProductsRepository {
     private categoriesRepository: Repository<Categories>,
   ) {}
 
+  // UPLOAD PRODUCTS
   async addProductRepository(product: Products): Promise<InsertResult> {
     return await this.productsRepository
       .createQueryBuilder()
@@ -25,6 +24,7 @@ export class ProductsRepository {
       .execute();
   }
 
+  //GET ALL PRODUCTS
   async getProductsRepository(
     skip: number,
     limit: number,
@@ -38,6 +38,7 @@ export class ProductsRepository {
     });
   }
 
+  // GET PRODUCT BY ID
   async getProductByIdRepository(id: string): Promise<Products> {
     return await this.productsRepository.findOne({
       where: { id },
@@ -45,6 +46,7 @@ export class ProductsRepository {
     });
   }
 
+  // GET PRODUCT BY NAME
   async getProductByNameRepository(name: string): Promise<Products> {
     return await this.productsRepository.findOne({
       where: { name },
@@ -52,6 +54,7 @@ export class ProductsRepository {
     });
   }
 
+  // GET PRODUCT BY CATEGORY
   async getProductByCategoryRepository(category: string): Promise<Products> {
     return await this.productsRepository.findOne({
       where: { category: { name: category } }, // Busca por el nombre dentro de category
@@ -59,10 +62,12 @@ export class ProductsRepository {
     });
   }
 
+  // UPDATE PRODUCT BY ID
   async updateProductRepository(id: string, product: Partial<Products>) {
     await this.productsRepository.update(id, product);
   }
 
+  // DELETE PRODUCT BY ID
   async deleteProductRepository(id: string) {
     await this.productsRepository.delete(id);
   }

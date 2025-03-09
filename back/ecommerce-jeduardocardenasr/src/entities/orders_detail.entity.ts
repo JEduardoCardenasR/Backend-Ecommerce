@@ -16,10 +16,6 @@ import { IsDecimal, IsNotEmpty, IsPositive } from 'class-validator';
   name: 'orderdetails',
 })
 export class OrderDetails {
-  // @ApiProperty({
-  //   description: 'Unique identifier of the order detail',
-  //   example: 'a1234567-b89c-12d3-e456-426614174000',
-  // })
   @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;

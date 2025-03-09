@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CategoriesRepository } from './categories.repository';
 import { data } from '../utils/Archivo_actividad_3';
-import { CategoryResponseDto } from 'src/dtos/categoriesDtos/category-response.dto';
+import { CategoryResponseDto } from '../dtos/categoriesDtos/category-response.dto';
 
 @Injectable()
 export class CategoriesService {
   constructor(private categoriesRepository: CategoriesRepository) {}
 
+  // UPLOAD PRODUCTS
   async addCategoriesService(): Promise<string> {
     for (const element of data) {
       await this.categoriesRepository.addCategoriesRepository(element);
@@ -14,7 +15,15 @@ export class CategoriesService {
     return 'Categories successfully added';
   }
 
-  getCategoriesService(): Promise<CategoryResponseDto[]> {
-    return this.categoriesRepository.getCategoriesRepository();
+  //GET ALL CATEGORIES
+  async getCategoriesService(): Promise<CategoryResponseDto[]> {
+    const categories: CategoryResponseDto[] =
+      await this.categoriesRepository.getCategoriesRepository();
+
+    if (!categories || categories.length === 0) {
+      throw new NotFoundException('No categories found');
+    }
+
+    return categories;
   }
 }

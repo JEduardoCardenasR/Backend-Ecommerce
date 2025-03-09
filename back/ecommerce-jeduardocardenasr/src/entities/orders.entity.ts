@@ -15,10 +15,6 @@ import { IsDate, IsNotEmpty } from 'class-validator';
   name: 'orders',
 })
 export class Orders {
-  // @ApiProperty({
-  //   description: 'Unique identifier of the order',
-  //   example: 'b2345678-c89d-12e3-f456-426614174000',
-  // })
   @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -33,12 +29,11 @@ export class Orders {
   @IsNotEmpty()
   date: Date;
 
-  // Nuevo campo que guardará el ID del usuario original que creó la orden
   @ApiProperty({
     description: 'Unique identifier of the user',
     example: '550e8400-e29b-41d4-a716-446655440000',
   })
-  @Column({ type: 'uuid', nullable: true }) // Permitir NULL si es necesario
+  @Column({ type: 'uuid', nullable: true })
   @IsNotEmpty()
   userId: string;
 

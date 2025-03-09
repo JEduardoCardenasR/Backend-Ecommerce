@@ -10,7 +10,6 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  // IsStrongPassword,
   Matches,
   MaxLength,
   MinLength,
@@ -53,10 +52,6 @@ export class CreateUserDto {
   })
   @IsNotEmpty()
   @IsString()
-  // @IsStrongPassword(
-  // minUppercase: 1,
-  // minLowercase: 1,
-  // )
   @MinLength(8, { message: 'Password must be at least 8 characters long.' })
   @MaxLength(15, { message: 'Password must be at most 15 characters long.' })
   @Matches(/[a-z]/, {
@@ -71,7 +66,6 @@ export class CreateUserDto {
   })
   password: string;
 
-  //Valida directamente dentro del DTO
   @ApiProperty({
     required: true,
     description: 'Confirm password (Must match the password field)',
@@ -80,7 +74,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   @Validate(MatchPassword, ['password'], {
     message: 'Passwords do not match.',
-  }) //Este password es el DTO password
+  })
   @Matches(/^.*$/, { message: 'Must match the password field.' })
   confirmPassword: string;
 
@@ -135,12 +129,6 @@ export class CreateUserDto {
   @MaxLength(50)
   city?: string;
 
-  // @ApiProperty({
-  //   description:
-  //     'Defines if the user has admin privileges (always empty for security reasons)',
-  //   example: null,
-  //   required: false,
-  // })
   @ApiHideProperty()
   @IsEmpty()
   isAdmin?: boolean;

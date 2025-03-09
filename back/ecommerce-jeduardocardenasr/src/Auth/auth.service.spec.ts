@@ -4,8 +4,8 @@ import { UsersRepository } from '../users/users.repository';
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from 'src/dtos/user.dto';
-import { Users } from 'src/entities/users.entity';
+import { CreateUserDto } from '../dtos/usersDtos/user.dto';
+import { Users } from '../entities/users.entity';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -18,8 +18,8 @@ describe('AuthService', () => {
     password: '123456',
     confirmPassword: '123456', // Necesario en CreateUserDto
     phone: 123456789,
-    country: 'México',
-    address: 'Avenida Siempre Viva 123',
+    country: 'Mexico',
+    address: 'Always Alive Avenue 123',
     city: 'Saltiyork',
     isAdmin: false,
   };
@@ -30,8 +30,8 @@ describe('AuthService', () => {
     email: 'test@test.com',
     password: 'hashed-password',
     phone: 123456789,
-    country: 'México',
-    address: 'Calle 123',
+    country: 'Mexico',
+    address: '123 Street',
     city: 'CDMX',
     isAdmin: false,
     orders: [], // Agregar si 'Users' lo requiere

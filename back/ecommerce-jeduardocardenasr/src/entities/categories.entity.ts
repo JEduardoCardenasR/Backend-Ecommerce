@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Products } from './products.entity';
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, Length } from 'class-validator';
@@ -13,10 +7,6 @@ import { IsNotEmpty, Length } from 'class-validator';
   name: 'categories',
 })
 export class Categories {
-  // @ApiProperty({
-  //   description: 'Unique identifier of the category',
-  //   example: '550e8400-e29b-41d4-a716-446655440000',
-  // })
   @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -40,6 +30,5 @@ export class Categories {
     type: [Products],
   })
   @OneToMany(() => Products, (product) => product.category)
-  // @JoinColumn({ name: 'product_id' })
   products: Products[];
 }

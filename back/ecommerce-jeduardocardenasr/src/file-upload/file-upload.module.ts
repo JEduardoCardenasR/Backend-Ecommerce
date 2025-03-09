@@ -3,11 +3,7 @@ import { FileUploadController } from './file-upload.controller';
 import { FileUploadService } from './file-upload.service';
 import { FileUploadRepository } from './file-upload.repository';
 import { CloudinaryConfig } from '../config/cloudinary';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Products } from '../entities/products.entity';
-import { ProductsRepository } from 'src/products/products.repository';
-import { CategoriesRepository } from 'src/categories/categories.repository';
-import { ProductsModule } from 'src/products/products.module';
+import { ProductsModule } from '../products/products.module';
 
 @Module({
   // imports: [TypeOrmModule.forFeature([Products])],

@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { FileUploadRepository } from './file-upload.repository';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Products } from '../entities/products.entity';
-import { ProductsRepository } from 'src/products/products.repository';
+import { ProductsRepository } from '../products/products.repository';
+import { UploadApiResponse } from 'cloudinary';
+import { ProductResponseDto } from '../dtos/productsDtos/product-response.dto';
 
 @Injectable()
 export class FileUploadService {
@@ -15,8 +15,12 @@ export class FileUploadService {
     private readonly productsRepository: ProductsRepository,
   ) {}
 
-  async uploadImageService(file: Express.Multer.File, productId: string) {
-    const product =
+  // UPLOAD IMAGE
+  async uploadImageService(
+    file: Express.Multer.File,
+    productId: string,
+  ): Promise<ProductResponseDto> {
+    const product: ProductResponseDto =
       await this.productsRepository.getProductByIdRepository(productId);
 
     //Verificando que el producto exista...
@@ -24,7 +28,7 @@ export class FileUploadService {
 
     try {
       //Subida de la imagen
-      const uploadedImage =
+      const uploadedImage: UploadApiResponse =
         await this.fileUploadRepository.uploadImageRepository(file);
 
       if (!uploadedImage?.secure_url) {

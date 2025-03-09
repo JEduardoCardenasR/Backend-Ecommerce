@@ -1,37 +1,50 @@
-import { Body, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../dtos/usersDtos/user.dto';
 import { ExcludeFieldsInterceptor } from '../interceptors/exclude-password.interceptor';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { LoginUserDTO } from '../dtos/usersDtos/loginUser.dto';
 import { SignUpResponseDto } from '../dtos/authDtos/sign-up-response.dto';
 import { SignInResponseDto } from '../dtos/authDtos/sign-in-response.dto';
-// import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
 
 @ApiTags('Auth')
+@ApiResponse({ status: 400, description: 'Bad request, invalid data format' })
+@ApiResponse({
+  status: 500,
+  description: 'Internal server error. Please try again later.',
+})
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Get()
-  // getAuthController(): string {
-  //   return this.authService.getAuth();
-  // }
-
+  // CREATE A USER
   @Post('signup')
   @ApiOperation({ summary: 'Register a new user' })
-  @ApiResponse({ status: 201, description: 'User registered successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid data for registration' })
-  // @UseInterceptors(ExcludeSensitiveFieldsInterceptor)
+  @ApiBody({
+    description: 'User data to create',
+    type: CreateUserDto,
+    required: true,
+  })
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
+  @ApiResponse({ status: 201, description: 'User registered successfully' })
+  @ApiResponse({
+    status: 409,
+    description: 'Email has already been registered',
+  })
   signUpController(@Body() user: CreateUserDto): Promise<SignUpResponseDto> {
     return this.authService.signUpService(user);
   }
 
+  // LOG IN A USER
   @Post('signin')
   @ApiOperation({ summary: 'Log in to the platform' })
+  @ApiBody({
+    description: 'User data to login (email and password)',
+    type: LoginUserDTO,
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     description: 'Login successful, returns JWT token',
@@ -40,8 +53,7 @@ export class AuthController {
   signInController(
     @Body() credentials: LoginUserDTO,
   ): Promise<SignInResponseDto> {
-    const { email, password }: { email: string; password: string } =
-      credentials;
+    const { email, password }: LoginUserDTO = credentials;
 
     return this.authService.signInService(email, password);
   }

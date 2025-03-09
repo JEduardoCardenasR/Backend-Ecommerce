@@ -11,10 +11,6 @@ import { IsEmail, IsNotEmpty, IsOptional, Length } from 'class-validator';
   name: 'users',
 })
 export class Users {
-  // @ApiProperty({
-  //   description: 'Unique identifier of the user',
-  //   example: '550e8400-e29b-41d4-a716-446655440000',
-  // })
   @ApiHideProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -65,7 +61,6 @@ export class Users {
   @Column({
     type: 'bigint',
   })
-  // @IsMobilePhone('any')
   @IsNotEmpty()
   phone: number;
 
@@ -107,10 +102,6 @@ export class Users {
   @IsOptional()
   city?: string;
 
-  // @ApiProperty({
-  //   description: 'Defines if the user has admin privileges',
-  //   example: true,
-  // })
   @ApiHideProperty()
   @Column({
     type: 'boolean',
@@ -123,6 +114,5 @@ export class Users {
     type: [Orders],
   })
   @OneToMany(() => Orders, (order) => order.userActive)
-  // @JoinColumn({ name: 'order_id' })
   orders: Orders[];
 }

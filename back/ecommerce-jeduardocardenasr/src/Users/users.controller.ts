@@ -3,21 +3,15 @@ import {
   Controller,
   Delete,
   Get,
-  // HttpCode,
-  // HttpStatus,
   Param,
   ParseUUIDPipe,
-  // Post,
   Put,
   Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-// import { ExcludeSensitiveFieldsInterceptor } from 'src/interceptors/exclude-password.interceptor';
 import { AuthGuard } from '../Auth/guards/auth.guard';
-// import { validateUser } from '../utils/users.validate';
-import { Users } from '../entities/users.entity';
 import { Roles } from '../decorators/roles.decorator';
 import { Rol } from '../enums/roles.enum';
 import { RolesGuard } from '../Auth/guards/roles.guard';
@@ -26,9 +20,9 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
+  ApiParam,
   ApiQuery,
   ApiResponse,
-  ApiSecurity,
   ApiTags,
 } from '@nestjs/swagger';
 import { UpdateUserDto } from '../dtos/usersDtos/update-user.dto';
@@ -36,21 +30,37 @@ import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
+@ApiResponse({ status: 400, description: 'Bad request, invalid data format' })
+@ApiResponse({ status: 401, description: 'Unauthorized access' })
+@ApiResponse({
+  status: 500,
+  description: 'Internal server error. Please try again later.',
+})
 @Controller('users')
 @UseGuards(AuthGuard)
-// @UseInterceptors(ExcludeSensitiveFieldsInterceptor) //Interceptor para no mostrar password
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
+  // GET ALL USERS
   @Get()
-  // @HttpCode(HttpStatus.OK) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
-  @ApiQuery({ name: 'page', required: false })
-  @ApiQuery({ name: 'limit', required: false })
-  @ApiSecurity('roles')
+  @ApiOperation({ summary: 'Retrieve all users (Admin only)' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number for pagination (default is 1)',
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of items per page (default is 5)',
+    type: Number,
+    example: 5,
+  })
   @Roles(Rol.Administrator)
   @UseGuards(RolesGuard)
   @UseInterceptors(ExcludeFieldsInterceptor(['password', 'confirmPassword']))
-  @ApiOperation({ summary: 'Retrieve all users (Admin only)' })
   @ApiResponse({
     status: 200,
     description: 'List of users retrieved successfully',
@@ -59,6 +69,7 @@ export class UsersController {
     status: 403,
     description: 'Forbidden: Only admins can access this data',
   })
+  @ApiResponse({ status: 404, description: 'No users found' })
   getUsersController(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -71,38 +82,46 @@ export class UsersController {
     return this.userService.getUsersService(pageNumber, limitNumber);
   }
 
+  // GET USER BY ID
   @Get(':id')
+  @ApiOperation({ summary: 'Retrieve a user by ID (Authenticated users only)' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'User ID (UUID format)',
+    example: '087513fe-0e35-4ab3-a5da-e367ec122074',
+  })
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
-  @ApiOperation({ summary: 'Retrieve a user by ID (Authenticated users only)' })
   @ApiResponse({ status: 200, description: 'User retrieved successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized access' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   getUserByIdController(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
     return this.userService.getUserByIdService(id);
   }
 
-  // @Post()
-  // createUserController(
-  //   @Body() newUser: CreateUserDto,
-  // ): Promise<Partial<Users>> {
-  //   return this.userService.createUserService(newUser);
-  // }
-
+  // UPDATE USER BY ID
   @Put(':id')
+  @ApiOperation({ summary: 'Update user details (Authenticated users only)' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'User ID (UUID format)',
+    example: '087513fe-0e35-4ab3-a5da-e367ec122074',
+  })
+  @ApiBody({
+    description: 'User data to update',
+    type: UpdateUserDto,
+    required: true,
+  })
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
-  @ApiOperation({ summary: 'Update user details (Authenticated users only)' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized access' })
-  @ApiBody({
-    description: 'User data to update',
-    type: UpdateUserDto, // Usamos el DTO
-    required: true,
-  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 409, description: 'Email is already in use' })
   updateUserController(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatedData: UpdateUserDto,
@@ -110,39 +129,23 @@ export class UsersController {
     return this.userService.updateUserService(id, updatedData);
   }
 
+  // DELETE USER BY ID
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a user (Authenticated users only)' })
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'User ID (UUID format)',
+    example: '087513fe-0e35-4ab3-a5da-e367ec122074',
+  })
   @UseInterceptors(
     ExcludeFieldsInterceptor(['password', 'confirmPassword', 'isAdmin']),
   )
-  @ApiOperation({ summary: 'Delete a user (Authenticated users only)' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
-  @ApiResponse({ status: 401, description: 'Unauthorized access' })
+  @ApiResponse({ status: 404, description: 'User not found' })
   deleteUserController(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<UserResponseDto> {
     return this.userService.deleteUserService(id);
   }
 }
-
-// @Post()
-//   // @HttpCode(HttpStatus.CREATED) // Para darle el código de respuesta pero es redundante porque nest ya lo hace por detrás
-//   createUserController(
-//     @Body() newUser: Users,
-//   ): Promise<Partial<Users>> | string {
-//     if (validateUser(newUser)) {
-//       return this.userService.createUserService(newUser);
-//     }
-//     return 'Usuario no válido';
-//   }
-
-// @Put(':id')
-//   @UseGuards(AuthGuard)
-//   updateUserController(
-//     @Param('id') id: string,
-//     @Body() updatedData: Partial<Users>,
-//   ): Promise<Partial<Users>> | string {
-//     if (validateUser(updatedData)) {
-//       return this.userService.updateUserService(id, updatedData);
-//     }
-//     return 'Usuario no válido';
-//   }

@@ -17,24 +17,35 @@ import {
   ApiBody,
   ApiConsumes,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { ProductResponseDto } from '../dtos/productsDtos/product-response.dto';
 
 const maxSizeInBytes = 200000;
+
 @ApiTags('Files')
+@ApiResponse({
+  status: 500,
+  description: 'Internal server error. Please try again later.',
+})
 @Controller('files')
 export class FileUploadController {
   constructor(private readonly fileUploadService: FileUploadService) {}
 
+  // UPLOAD IMAGE
   @Post('/uploadImage/:id')
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: 'Upload an image for a product (Authenticated users only)',
   })
   @ApiConsumes('multipart/form-data')
+  @ApiParam({
+    name: 'id',
+    required: true,
+    description: 'User ID (UUID format)',
+    example: '087513fe-0e35-4ab3-a5da-e367ec122074',
+  })
   @ApiBody({
     schema: {
       type: 'object',
@@ -46,12 +57,16 @@ export class FileUploadController {
       },
     },
   })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @ApiResponse({ status: 201, description: 'Image uploaded successfully' })
   @ApiResponse({
     status: 400,
     description: 'Invalid file format or size exceeded',
   })
   @ApiResponse({ status: 401, description: 'Unauthorized access' })
+  @ApiResponse({ status: 404, description: 'Product not found' })
   uploadImageController(
     @Param('id') productId: string,
     @UploadedFile(
@@ -68,7 +83,7 @@ export class FileUploadController {
       }),
     )
     file: Express.Multer.File,
-  ) {
+  ): Promise<ProductResponseDto> {
     return this.fileUploadService.uploadImageService(file, productId);
   }
 }
