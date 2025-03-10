@@ -1,51 +1,61 @@
-import { Users } from '../entities/users.entity';
 import { UsersController } from './users.controller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../Auth/guards/auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
+import { NotFoundException } from '@nestjs/common';
 
 describe('UsersController', () => {
   let controller: UsersController;
-  let mockUsersService;
+  let mockUsersService: Partial<UsersService>;
 
-  const mockUsers: Users[] = [
+  const mockUsers: UserResponseDto[] = [
     {
       id: '1',
       name: 'Edu',
       email: 'edu@mail.com',
       password: '1234567',
       phone: 123456789,
-      country: 'México',
-      address: 'Avenida Siempre Viva 123',
-      city: 'Saltiyork',
+      country: 'Mexico',
+      address: 'ALways Alive Avenue 123',
+      city: 'SaltiYork',
       isAdmin: false,
       orders: [],
     },
     {
       id: '2',
-      name: 'Pedtronilo',
+      name: 'Petronilo',
       email: 'petro@mail.com',
       password: '1234567',
       phone: 123456789,
-      country: 'México',
-      address: 'Avenida Siempre Viva 123',
-      city: 'Saltiyork',
+      country: 'Mexico',
+      address: 'ALways Alive Avenue 123',
+      city: 'SaltiYork',
       isAdmin: false,
       orders: [],
     },
   ];
 
   beforeEach(async () => {
+    mockUsersService = {
+      getUsersService: jest.fn().mockResolvedValue(mockUsers),
+      getUserByIdService: jest.fn().mockImplementation((id) => {
+        const user: UserResponseDto = mockUsers.find((u) => u.id === id);
+        if (!user)
+          return Promise.reject(
+            new NotFoundException(`User with id ${id} was not found`),
+          );
+        return Promise.resolve(user);
+      }),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
         {
           provide: UsersService,
-          useValue: {
-            getUsersService: jest.fn().mockResolvedValue(mockUsers),
-            getUserByIdService: jest.fn().mockResolvedValue(mockUsers[0]),
-          },
+          useValue: mockUsersService,
         },
         {
           provide: AuthGuard,
@@ -67,23 +77,36 @@ describe('UsersController', () => {
     mockUsersService = module.get<UsersService>(UsersService);
   });
 
-  it('Debe estar definido el controlador', () => {
+  it('The controller should be defined', () => {
     expect(controller).toBeDefined();
   });
 
   describe('getUsers', () => {
-    it('Debe retornar una lista de usuarios', async () => {
-      const result = await controller.getUsersController();
+    it('Should return a list of users', async () => {
+      const result: UserResponseDto[] = await controller.getUsersController();
       expect(result).toEqual(mockUsers);
       expect(mockUsersService.getUsersService).toHaveBeenCalled();
     });
   });
 
   describe('getUserById', () => {
-    it('Debe retornar un usuario', async () => {
-      const result = await controller.getUserByIdController('1');
-      expect(result).toEqual(mockUsers[0]);
-      expect(mockUsersService.getUserByIdService).toHaveBeenCalledWith('1');
+    it('Should return a user if ID exists', async () => {
+      const userId: string = '1';
+      const result: UserResponseDto =
+        await controller.getUserByIdController(userId);
+      expect(result).toEqual(mockUsers[Number(userId) - 1]);
+      expect(mockUsersService.getUserByIdService).toHaveBeenCalledWith(userId);
+    });
+
+    it('Should throw a NotFoundException if user ID does not exist', async () => {
+      const nonExistentUserId: string = '3';
+      await expect(
+        controller.getUserByIdController(nonExistentUserId),
+      ).rejects.toThrow(NotFoundException);
+
+      expect(mockUsersService.getUserByIdService).toHaveBeenCalledWith(
+        nonExistentUserId,
+      );
     });
   });
 });

@@ -6,26 +6,28 @@ import { App } from 'supertest/types';
 import { UsersRepository } from '../src/users/users.repository';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { CreateUserDto } from '../src/dtos/usersDtos/user.dto';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication<App>;
   let mockUsersRepository: Partial<UsersRepository>;
   let jwtService: JwtService;
 
-  const testUser = {
+  const testUser: CreateUserDto = {
     name: 'Edu',
     email: 'edu@mail.com',
     password: '1234567',
+    confirmPassword: '1234567',
     phone: 123456789,
-    country: 'México',
-    address: 'Avenida Siempre Viva 123',
-    city: 'Saltiyork',
+    country: 'Mexico',
+    address: 'Always Alive Avenue 123',
+    city: 'SaltiYork',
     isAdmin: false,
   };
 
   beforeEach(async () => {
     mockUsersRepository = {
-      getUserByEmail: jest.fn().mockResolvedValue(testUser),
+      getUserByEmailRepository: jest.fn().mockResolvedValue(testUser),
     };
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -44,7 +46,7 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  it('POST en la ruta "/auth/singin" debería autenticar el usuario y retornar un token', () => {
+  it('Route Post in "/auth/singin" should authenticate a user and give a token in response', () => {
     return request(app.getHttpServer())
       .post('/auth/signin')
       .send({ email: 'edu@mail.com', password: '1234567' })

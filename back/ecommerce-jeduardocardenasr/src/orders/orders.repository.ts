@@ -18,7 +18,7 @@ export class OrdersRepository {
     return await this.ordersRepository.find({
       relations: {
         orderDetails: {
-          products: true, // Aquí se agrega la relación con los productos
+          products: true,
         },
       },
       take: limit,

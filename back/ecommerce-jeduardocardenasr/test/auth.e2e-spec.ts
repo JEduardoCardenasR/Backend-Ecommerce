@@ -20,7 +20,7 @@ describe('AuthController (e2e)', () => {
     userRepository = moduleFixture.get<UsersRepository>(UsersRepository);
 
     // Asegurar que haya un usuario en la base de datos para probar login
-    await userRepository.createUser({
+    await userRepository.createUserRepository({
       name: 'Test User',
       email: 'auth@test.com',
       password: await bcrypt.hash('password123', 10), // Hasheamos la contraseña
@@ -36,8 +36,8 @@ describe('AuthController (e2e)', () => {
     await app.close();
   });
 
-  it('Debe iniciar sesión y recibir un token con credenciales válidas', async () => {
-    const response = await request(app.getHttpServer())
+  it('Should sing in and give a valid token in response', async () => {
+    const response: request.Response = await request(app.getHttpServer())
       .post('/auth/signin')
       .send({ email: 'auth@test.com', password: 'password123' })
       .expect(201);
@@ -45,14 +45,14 @@ describe('AuthController (e2e)', () => {
     expect(response.body).toHaveProperty('token');
   });
 
-  it('Debe fallar con credenciales incorrectas', async () => {
+  it('Should fail with the wrong credentials', async () => {
     await request(app.getHttpServer())
       .post('/auth/signin')
       .send({ email: 'auth@test.com', password: 'wrongpassword' })
       .expect(401);
   });
 
-  it('Debe fallar si no se envían datos', async () => {
+  it('Should fail if data is not sent within the request', async () => {
     await request(app.getHttpServer())
       .post('/auth/signin')
       .send({})

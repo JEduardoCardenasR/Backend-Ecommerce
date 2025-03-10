@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -33,7 +34,7 @@ export class AuthService {
       await this.userRepository.getUserByEmailRepository(email);
 
     if (foundUser)
-      throw new BadRequestException('Email has already been registered');
+      throw new ConflictException('Email has already been registered');
 
     //Proceso de registro
 

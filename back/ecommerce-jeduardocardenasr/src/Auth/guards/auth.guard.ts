@@ -40,7 +40,6 @@ export class AuthGuard implements CanActivate {
       request.user = payload;
 
       return true;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }

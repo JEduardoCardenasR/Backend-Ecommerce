@@ -2,13 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsService } from './products.service';
 import { ProductsRepository } from './products.repository';
 import { NotFoundException } from '@nestjs/common';
-import { Products } from '../entities/products.entity';
+import { ProductResponseDto } from '../dtos/productsDtos/product-response.dto';
+import { CategoriesRepository } from '../categories/categories.repository';
 
 describe('ProductsService', () => {
   let productsService: ProductsService;
   let productsRepositoryMock: Partial<ProductsRepository>;
+  let categoriesRepositoryMock: Partial<CategoriesRepository>;
 
-  const mockProduct: Products = {
+  const mockProduct: ProductResponseDto = {
     id: '1',
     name: 'Laptop Gamer',
     description: 'Laptop con RTX 3070',
@@ -19,12 +21,25 @@ describe('ProductsService', () => {
     orderDetails: [],
   };
 
+  const mockGetProductById: (
+    id: string,
+  ) => Promise<ProductResponseDto | NotFoundException> = (id: string) => {
+    if (id !== '1') {
+      return Promise.reject(
+        new NotFoundException(`Product with id ${id} was not found`),
+      );
+    }
+    return Promise.resolve(mockProduct);
+  };
+
   beforeEach(async () => {
     productsRepositoryMock = {
-      getProductById: jest.fn(),
-      getProducts: jest.fn(),
-      updateProduct: jest.fn(),
+      getProductByIdRepository: jest
+        .fn()
+        .mockImplementation(mockGetProductById),
     };
+
+    categoriesRepositoryMock = {};
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -33,41 +48,47 @@ describe('ProductsService', () => {
           provide: ProductsRepository,
           useValue: productsRepositoryMock,
         },
+        {
+          provide: CategoriesRepository,
+          useValue: categoriesRepositoryMock,
+        },
       ],
     }).compile();
 
     productsService = module.get<ProductsService>(ProductsService);
+    productsRepositoryMock = module.get<ProductsRepository>(ProductsRepository);
+    categoriesRepositoryMock =
+      module.get<CategoriesRepository>(CategoriesRepository);
   });
 
-  it('Debe estar definido', () => {
+  it('Service should be defined', () => {
     expect(productsService).toBeDefined();
   });
 
   describe('getProductByIdService', () => {
-    it('Debe retornar un producto si existe', async () => {
-      jest
-        .spyOn(productsRepositoryMock, 'getProductById')
-        .mockResolvedValue(mockProduct);
-
-      const result = await productsService.getProductByIdService('1');
+    it('Should return a product', async () => {
+      const userId: string = '1';
+      const result: ProductResponseDto =
+        await productsService.getProductByIdService(userId);
       expect(result).toEqual(mockProduct);
-      expect(productsRepositoryMock.getProductById).toHaveBeenCalledWith('1'); // Verificar que se llamó con el ID correcto
+      expect(
+        productsRepositoryMock.getProductByIdRepository,
+      ).toHaveBeenCalledWith(userId);
     });
 
-    it('Debe lanzar NotFoundException si el producto no existe', async () => {
-      jest
-        .spyOn(productsRepositoryMock, 'getProductById')
-        .mockResolvedValue(null);
-
+    it('Should throw a NotFoundException if product ID does not exist', async () => {
+      const nonExistentUserId: string = '2';
       await expect(
-        productsService.getProductByIdService('9999'),
+        productsService.getProductByIdService(nonExistentUserId),
       ).rejects.toThrow(
-        new NotFoundException('Producto con id 9999 no enconrado'),
+        new NotFoundException(
+          `Product with id ${nonExistentUserId} was not found`,
+        ),
       );
 
-      expect(productsRepositoryMock.getProductById).toHaveBeenCalledWith(
-        '9999',
-      ); // Verificar que se llamó con el ID correcto
+      expect(
+        productsRepositoryMock.getProductByIdRepository,
+      ).toHaveBeenCalledWith(nonExistentUserId);
     });
   });
 });

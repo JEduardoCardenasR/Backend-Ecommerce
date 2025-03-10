@@ -3,12 +3,13 @@ import { UsersRepository } from './users.repository';
 import { Users } from '../entities/users.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
 
 describe('UsersRepository', () => {
   let usersRepository: UsersRepository;
   let usersRepositoryMock: Repository<Users>;
 
-  const mockUser: Users = {
+  const mockUser: UserResponseDto = {
     id: '1',
     name: 'Edu',
     email: 'edu@mail.com',
@@ -40,15 +41,16 @@ describe('UsersRepository', () => {
     );
   });
 
-  it('Debe estar definido el UsersRepository', () => {
+  it('Repository should be defined', () => {
     expect(usersRepository).toBeDefined();
   });
 
   describe('getUserByEmail', () => {
-    it('Debe retornar un usuario si el email existe', async () => {
+    it('Should return a user if email exist', async () => {
       jest.spyOn(usersRepositoryMock, 'findOneBy').mockResolvedValue(mockUser);
 
-      const result = await usersRepository.getUserByEmail('edu@mail.com');
+      const result: UserResponseDto =
+        await usersRepository.getUserByEmailRepository('edu@mail.com');
 
       expect(result).toEqual(mockUser);
       expect(usersRepositoryMock.findOneBy).toHaveBeenCalledWith({
@@ -56,10 +58,11 @@ describe('UsersRepository', () => {
       });
     });
 
-    it('Debe retornar null si el email no existe', async () => {
+    it('Should return null if email does not exist', async () => {
       jest.spyOn(usersRepositoryMock, 'findOneBy').mockResolvedValue(null);
 
-      const result = await usersRepository.getUserByEmail('noexiste@mail.com');
+      const result: UserResponseDto =
+        await usersRepository.getUserByEmailRepository('noexiste@mail.com');
 
       expect(result).toBeNull();
       expect(usersRepositoryMock.findOneBy).toHaveBeenCalledWith({

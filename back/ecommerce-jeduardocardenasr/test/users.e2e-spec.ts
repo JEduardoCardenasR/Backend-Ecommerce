@@ -4,6 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { UsersRepository } from '../src/users/users.repository';
 import * as bcrypt from 'bcrypt';
+import { UserResponseDto } from '../src/dtos/usersDtos/user-response.dto';
 
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
@@ -22,21 +23,22 @@ describe('UsersController (e2e)', () => {
     userRepository = moduleFixture.get<UsersRepository>(UsersRepository);
 
     // Crear un usuario de prueba
-    const user = await userRepository.createUser({
-      name: 'Test User',
-      email: 'users@example.com',
-      password: await bcrypt.hash('password123', 10),
-      phone: 123456789,
-      country: 'México',
-      address: 'Calle 123',
-      city: 'CDMX',
-      isAdmin: false,
-    });
+    const user: Partial<UserResponseDto> =
+      await userRepository.createUserRepository({
+        name: 'Test User',
+        email: 'users@example.com',
+        password: await bcrypt.hash('password123', 10),
+        phone: 123456789,
+        country: 'Mexico',
+        address: '123 Street',
+        city: 'CDMX',
+        isAdmin: false,
+      });
 
     testUserId = user.id; // Guardamos el ID del usuario de prueba
 
     // Obtener token de autenticación
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .post('/auth/signin')
       .send({ email: 'users@example.com', password: 'password123' });
     authToken = response.body.token;
@@ -46,8 +48,8 @@ describe('UsersController (e2e)', () => {
     await app.close();
   });
 
-  it('Debe obtener un usuario existente por ID', async () => {
-    const response = await request(app.getHttpServer())
+  it('Should get an existing user by ID', async () => {
+    const response: request.Response = await request(app.getHttpServer())
       .get(`/users/${testUserId}`)
       .set('Authorization', `Bearer ${authToken}`) // Enviar el token de autenticación
       .expect(200);
@@ -56,8 +58,8 @@ describe('UsersController (e2e)', () => {
     expect(response.body).toHaveProperty('name', 'Test User');
   });
 
-  it('Debe devolver 404 si el usuario no existe', async () => {
-    const fakeUserId = '11111111-1111-1111-1111-111111111111'; // UUID inválido
+  it('Should throw 404 if user does not exist', async () => {
+    const fakeUserId: string = '11111111-1111-1111-1111-111111111111'; // UUID inválido
     await request(app.getHttpServer())
       .get(`/users/${fakeUserId}`)
       .set('Authorization', `Bearer ${authToken}`)

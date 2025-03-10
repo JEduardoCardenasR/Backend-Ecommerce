@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Categories } from '../entities/categories.entity';
 import { Products } from '../entities/products.entity';
 import { InsertResult, MoreThan, Repository } from 'typeorm';
 
@@ -9,8 +8,6 @@ export class ProductsRepository {
   constructor(
     @InjectRepository(Products)
     private productsRepository: Repository<Products>,
-    @InjectRepository(Categories)
-    private categoriesRepository: Repository<Categories>,
   ) {}
 
   // UPLOAD PRODUCTS
@@ -57,8 +54,8 @@ export class ProductsRepository {
   // GET PRODUCT BY CATEGORY
   async getProductByCategoryRepository(category: string): Promise<Products> {
     return await this.productsRepository.findOne({
-      where: { category: { name: category } }, // Busca por el nombre dentro de category
-      relations: ['category'], // Asegura que se cargue la relación con category
+      where: { category: { name: category } },
+      relations: ['category'],
     });
   }
 

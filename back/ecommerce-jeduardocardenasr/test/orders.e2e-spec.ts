@@ -8,6 +8,9 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Orders } from '../src/entities/orders.entity';
 import * as bcrypt from 'bcrypt';
 import { Users } from '../src/entities/users.entity';
+import { UserResponseDto } from '../src/dtos/usersDtos/user-response.dto';
+import { ProductResponseDto } from '../src/dtos/productsDtos/product-response.dto';
+import { IOrderData } from '../src/interfaces/orderData.interface';
 
 describe('OrdersController (e2e)', () => {
   let app: INestApplication;
@@ -38,7 +41,7 @@ describe('OrdersController (e2e)', () => {
     );
 
     // Crear un usuario de prueba
-    const user = usersRepository.create({
+    const user: UserResponseDto = usersRepository.create({
       name: 'Test User',
       email: 'users@example.com',
       password: await bcrypt.hash('password123', 10),
@@ -53,33 +56,32 @@ describe('OrdersController (e2e)', () => {
 
     userId = user.id;
 
-    const insertedProducts = await productsRepository.save([
-      {
-        name: 'Text1',
-        description: 'Text1',
-        price: 10.99,
-        stock: 10,
-        imgUrl: 'Text1',
-      },
-      {
-        name: 'Text2',
-        description: 'Text2',
-        price: 10.99,
-        stock: 10,
-        imgUrl: 'Text2',
-      },
-    ]);
+    const insertedProducts: ProductResponseDto[] =
+      await productsRepository.save([
+        {
+          name: 'Text1',
+          description: 'Text1',
+          price: 10.99,
+          stock: 10,
+          imgUrl: 'Text1',
+        },
+        {
+          name: 'Text2',
+          description: 'Text2',
+          price: 10.99,
+          stock: 10,
+          imgUrl: 'Text2',
+        },
+      ]);
 
     // Guardamos los IDs de los productos insertados
     insertedProductIds = insertedProducts.map((id) => id.id);
 
     // Obtener token de autenticación
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .post('/auth/signin')
       .send({ email: 'users@example.com', password: 'password123' });
     authToken = response.body.token;
-
-    console.log('Token obtenido:', authToken);
   });
 
   afterAll(async () => {
@@ -116,23 +118,17 @@ describe('OrdersController (e2e)', () => {
     }
   });
 
-  it('Debe crear una orden con productos válidos', async () => {
-    const orderData = {
+  it('Should create an order', async () => {
+    const orderData: IOrderData = {
       userId: userId,
       products: [{ id: insertedProductIds[0] }, { id: insertedProductIds[1] }],
     };
 
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .post('/orders')
       .set('Authorization', `Bearer ${authToken}`) // Enviar el token de autenticación
       .send(orderData)
       .expect(201);
-
-    //Imprime detalladamente en consola la respuesta
-    console.log(
-      'Respuesta detallada de la API:',
-      JSON.stringify(response.body, null, 2),
-    );
 
     expect(response.body).toHaveProperty('id');
     expect(response.body).toHaveProperty('date');
@@ -151,8 +147,8 @@ describe('OrdersController (e2e)', () => {
     });
   });
 
-  it('Debe retornar un error si se intenta crear una orden con productos inexistentes', async () => {
-    const orderData = {
+  it('Should throw an Exception if is given wrong information', async () => {
+    const orderData: IOrderData = {
       userId: userId,
       products: [
         { id: '11111111-1111-1111-1111-111111111111' },
@@ -160,7 +156,7 @@ describe('OrdersController (e2e)', () => {
       ],
     };
 
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .post('/orders')
       .set('Authorization', `Bearer ${authToken}`) // Enviar el token de autenticación
       .send(orderData)

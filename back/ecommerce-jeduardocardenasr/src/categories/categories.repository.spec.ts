@@ -3,14 +3,15 @@ import { CategoriesRepository } from './categories.repository';
 import { Categories } from '../entities/categories.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { CategoryResponseDto } from '../dtos/categoriesDtos/category-response.dto';
 
 describe('CategoriesRepository', () => {
   let categoriesRepository: CategoriesRepository;
   let categoriesRepositoryMock: Repository<Categories>;
 
-  const mockCategories: Categories[] = [
-    { id: '1', name: 'Celular Genérico', products: [] },
-    { id: '2', name: 'Televisor Genérico', products: [] },
+  let mockCategories: CategoryResponseDto[] = [
+    { id: '1', name: 'Generic Phone', products: [] },
+    { id: '2', name: 'Generic TV', products: [] },
   ];
 
   beforeEach(async () => {
@@ -33,26 +34,32 @@ describe('CategoriesRepository', () => {
     );
   });
 
-  it('Debe estar definido el CategoriesRepository', () => {
+  it('Repository should be defined', () => {
     expect(categoriesRepository).toBeDefined();
   });
 
   describe('getCategories', () => {
-    it('Debe retornar una lista de categorías', async () => {
+    it('Should return a list of categories', async () => {
       jest
         .spyOn(categoriesRepositoryMock, 'find')
         .mockResolvedValue(mockCategories);
 
-      const result = await categoriesRepository.getCategories();
+      const result: CategoryResponseDto[] =
+        await categoriesRepository.getCategoriesRepository();
 
       expect(result).toEqual(mockCategories);
       expect(categoriesRepositoryMock.find).toHaveBeenCalled();
     });
 
-    it('Debe retornar un array vacío si no hay categorías', async () => {
-      jest.spyOn(categoriesRepositoryMock, 'find').mockResolvedValue([]);
+    it('Should return an empty array if there are no categories', async () => {
+      mockCategories = [];
 
-      const result = await categoriesRepository.getCategories();
+      jest
+        .spyOn(categoriesRepositoryMock, 'find')
+        .mockResolvedValue(mockCategories);
+
+      const result: CategoryResponseDto[] =
+        await categoriesRepository.getCategoriesRepository();
 
       expect(result).toEqual([]);
       expect(categoriesRepositoryMock.find).toHaveBeenCalled();

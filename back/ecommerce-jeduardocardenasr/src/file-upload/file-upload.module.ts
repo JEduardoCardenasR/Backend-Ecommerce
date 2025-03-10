@@ -6,8 +6,7 @@ import { CloudinaryConfig } from '../config/cloudinary';
 import { ProductsModule } from '../products/products.module';
 
 @Module({
-  // imports: [TypeOrmModule.forFeature([Products])],
-  imports: [ProductsModule], //Se importa completamente el módulo de products
+  imports: [ProductsModule],
   controllers: [FileUploadController],
   providers: [FileUploadService, FileUploadRepository, CloudinaryConfig],
 })

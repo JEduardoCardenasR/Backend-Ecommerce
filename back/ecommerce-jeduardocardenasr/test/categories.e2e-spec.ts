@@ -38,8 +38,8 @@ describe('CategoriesController (e2e)', () => {
     await app.close();
   });
 
-  it('Debe retornar una lista de categorías', async () => {
-    const response = await request(app.getHttpServer())
+  it('Should return a list of categories', async () => {
+    const response: request.Response = await request(app.getHttpServer())
       .get('/categories')
       .expect(200);
 

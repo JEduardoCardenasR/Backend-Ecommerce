@@ -23,7 +23,7 @@ export class FileUploadService {
     const product: ProductResponseDto =
       await this.productsRepository.getProductByIdRepository(productId);
 
-    //Verificando que el producto exista...
+    //Verificando que el producto exista
     if (!product) throw new NotFoundException(`Product ${productId} not found`);
 
     try {

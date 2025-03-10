@@ -22,7 +22,6 @@ export class MatchPassword implements ValidatorConstraintInterface {
 
   //Si la validación falla:
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   defaultMessage(args?: ValidationArguments): string {
     return `Password and password confirmation don't match`;
   }

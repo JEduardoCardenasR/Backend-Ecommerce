@@ -35,12 +35,11 @@ export class CreateProductDto {
   description: string;
 
   @ApiProperty({
-    description: 'Product price (Must be a Decimal)',
+    description: 'Product price',
     example: 99.99,
     type: Number,
   })
   @IsNotEmpty()
-  // @IsDecimal()
   price: number;
 
   @ApiProperty({

@@ -3,13 +3,13 @@ import { Repository, UpdateResult } from 'typeorm';
 import { Products } from '../entities/products.entity';
 import { ProductsRepository } from './products.repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Categories } from '../entities/categories.entity';
+import { ProductResponseDto } from '../dtos/productsDtos/product-response.dto';
 
 describe('ProductsRepository', () => {
   let productsRepository: ProductsRepository;
   let productsRepositoryMock: Repository<Products>;
 
-  const mockProduct: Products = {
+  const mockProduct: ProductResponseDto = {
     id: '1',
     name: 'Laptop Gamer',
     description: 'Laptop con RTX 3070',
@@ -27,16 +27,10 @@ describe('ProductsRepository', () => {
         {
           provide: getRepositoryToken(Products),
           useValue: {
-            findOneBy: jest.fn().mockResolvedValue(mockProduct),
+            findOne: jest.fn().mockResolvedValue(mockProduct),
             update: jest
               .fn()
-              .mockResolvedValue({ affected: 1 } as UpdateResult), // Simulando el retorno de TypeORM
-          },
-        },
-        {
-          provide: getRepositoryToken(Categories),
-          useValue: {
-            findOneBy: jest.fn(), // Simulación de un método del repositorio de Categories
+              .mockResolvedValue({ affected: 1 } as UpdateResult), // Simula el retorno de TypeORM en update
           },
         },
       ],
@@ -48,52 +42,60 @@ describe('ProductsRepository', () => {
     );
   });
 
-  it('Debe estar definido el ProductsRepository', () => {
+  it('Repository should be defined', () => {
     expect(productsRepository).toBeDefined();
   });
 
   describe('getProductById', () => {
-    it('Debe retornar un producto si el ID existe', async () => {
+    it('Should return a product if the ID exists', async () => {
       jest
-        .spyOn(productsRepositoryMock, 'findOneBy')
-        .mockResolvedValue(mockProduct);
+        .spyOn(productsRepositoryMock, 'findOne')
+        .mockImplementation(async (options) => {
+          const id: string =
+            'where' in options ? (options.where as { id: string }).id : null;
+          return id === '1' ? mockProduct : null;
+        });
 
-      const result = await productsRepository.getProductById('1');
+      const result: ProductResponseDto =
+        await productsRepository.getProductByIdRepository('1');
 
       expect(result).toEqual(mockProduct);
-      expect(productsRepositoryMock.findOneBy).toHaveBeenCalledWith({
-        id: '1',
+      expect(productsRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: '1' },
+        relations: { category: true },
       });
     });
 
-    it('Debe retornar null si el producto no existe', async () => {
-      jest.spyOn(productsRepositoryMock, 'findOneBy').mockResolvedValue(null);
+    it('Should return null if the product does not exist', async () => {
+      jest
+        .spyOn(productsRepositoryMock, 'findOne')
+        .mockImplementation(async (options) => {
+          const id: string =
+            'where' in options ? (options.where as { id: string }).id : null;
+          return id === '1' ? mockProduct : null;
+        });
 
-      const result = await productsRepository.getProductById('9999');
+      const result: ProductResponseDto =
+        await productsRepository.getProductByIdRepository('2'); // ID inexistente
       expect(result).toBeNull();
-      expect(productsRepositoryMock.findOneBy).toHaveBeenCalledWith({
-        id: '9999',
+      expect(productsRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: '2' },
+        relations: { category: true },
       });
     });
   });
 
   describe('updateProduct', () => {
-    it('Debe actualizar y devolver el producto actualizado', async () => {
-      jest.spyOn(productsRepositoryMock, 'update').mockResolvedValue(undefined);
+    it('Should update a product', async () => {
       jest
-        .spyOn(productsRepositoryMock, 'findOneBy')
-        .mockResolvedValue(mockProduct);
+        .spyOn(productsRepositoryMock, 'update')
+        .mockResolvedValue({ affected: 1 } as UpdateResult);
 
-      const result = await productsRepository.updateProduct('1', {
-        name: 'Producto Actualizado',
+      await productsRepository.updateProductRepository('1', {
+        name: 'Product updated',
       });
-      expect(result).toEqual(mockProduct);
-      expect(productsRepositoryMock.update).toHaveBeenCalledWith(
-        '1', // Filtro para encontrar el producto
-        { name: 'Producto Actualizado' }, // Datos a actualizar
-      );
-      expect(productsRepositoryMock.findOneBy).toHaveBeenCalledWith({
-        id: '1',
+      expect(productsRepositoryMock.update).toHaveBeenCalledWith('1', {
+        name: 'Product updated',
       });
     });
   });

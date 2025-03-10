@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { Repository } from 'typeorm';
+import { InsertResult, Repository } from 'typeorm';
 import { Products } from '../src/entities/products.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
@@ -25,7 +25,7 @@ describe('ProductsController (e2e)', () => {
 
     // Insertar datos de prueba en la base de datos
 
-    const insertedProducts = await productsRepository.insert([
+    const insertedProducts: InsertResult = await productsRepository.insert([
       {
         name: 'Text',
         description: 'Text',
@@ -48,8 +48,8 @@ describe('ProductsController (e2e)', () => {
     await app.close();
   });
 
-  it('Debe retornar una lista de productos en formato correcto', async () => {
-    const response = await request(app.getHttpServer())
+  it('Should return a list of products in the correct format', async () => {
+    const response: request.Response = await request(app.getHttpServer())
       .get('/products')
       .expect(200);
 
