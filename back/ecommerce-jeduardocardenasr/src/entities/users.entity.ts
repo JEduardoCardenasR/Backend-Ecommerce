@@ -102,6 +102,16 @@ export class Users {
   @IsOptional()
   city?: string;
 
+  @ApiProperty({
+    description: 'Date of birth (Structure must be FullYear-Month-Day)',
+    example: '2024-03-01',
+  })
+  @Column({
+    type: Date,
+    nullable: false,
+  })
+  dateOfBirth: Date;
+
   @ApiHideProperty()
   @Column({
     type: 'boolean',

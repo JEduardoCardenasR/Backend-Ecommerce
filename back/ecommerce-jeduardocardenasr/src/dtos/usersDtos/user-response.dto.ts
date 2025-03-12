@@ -61,6 +61,13 @@ export class UserResponseDto {
   isAdmin: boolean;
 
   @ApiProperty({
+    description: 'Date of birth (Structure must be FullYear-Month-Day)',
+    example: '2024-03-01',
+    required: true,
+  })
+  dateOfBirth: string;
+
+  @ApiProperty({
     description: 'List of orders placed by the user',
     type: () => [Orders],
   })

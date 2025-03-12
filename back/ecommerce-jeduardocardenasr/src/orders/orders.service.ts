@@ -10,9 +10,9 @@ import { OrderDetails } from '../entities/orders_detail.entity';
 import { UsersRepository } from '../users/users.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { OrderResponseDto } from '../dtos/ordersDtos/order-response.dto';
-import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
 import { ProductResponseDto } from '../dtos/productsDtos/product-response.dto';
 import { OrderDetailsResponseDto } from '../dtos/ordersDtos/orderDetails-response.dto';
+import { Users } from '../entities/users.entity';
 
 @Injectable()
 export class OrdersService {
@@ -41,8 +41,9 @@ export class OrdersService {
 
   // CREATE ORDERS
   async addOrderService(orderData: CreateOrderDto): Promise<OrderResponseDto> {
-    const user: UserResponseDto =
-      await this.usersRepository.getUserByIdRepository(orderData.userId);
+    const user: Users = await this.usersRepository.getUserByIdRepository(
+      orderData.userId,
+    );
 
     if (!user) {
       throw new NotFoundException(

@@ -73,4 +73,10 @@ export class UpdateUserDto {
   @MinLength(2)
   @MaxLength(50)
   city?: string;
+
+  @ApiPropertyOptional({
+    description: 'Date of birth (Structure must be FullYear-Month-Day)',
+    example: '2024-03-01',
+  })
+  dateOfBirth?: string;
 }

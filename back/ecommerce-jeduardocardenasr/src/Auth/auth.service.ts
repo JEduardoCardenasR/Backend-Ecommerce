@@ -9,10 +9,10 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../dtos/usersDtos/user.dto';
 import { SignUpResponseDto } from '../dtos/authDtos/sign-up-response.dto';
-import { UserResponseDto } from '../dtos/usersDtos/user-response.dto';
 import { IJwtPayload } from '../interfaces/jwtPayload.interface';
 import { SignInResponseDto } from '../dtos/authDtos/sign-in-response.dto';
 import { LoginUserDTO } from '../dtos/usersDtos/loginUser.dto';
+import { Users } from '../entities/users.entity';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +30,7 @@ export class AuthService {
       throw new BadRequestException('Email and password are required');
 
     //Verificar si extiste el usuario (mail)
-    const foundUser: UserResponseDto =
+    const foundUser: Users =
       await this.userRepository.getUserByEmailRepository(email);
 
     if (foundUser)
@@ -46,9 +46,10 @@ export class AuthService {
 
     //Guardar el usuario en la base de datos
 
-    const savedUser: Partial<UserResponseDto> =
+    const savedUser: Partial<Users> =
       await this.userRepository.createUserRepository({
         ...user,
+        dateOfBirth: new Date(user.dateOfBirth),
         password: hashedPassword,
       });
 
@@ -66,7 +67,10 @@ export class AuthService {
     //Entregamos la respuesta:
     return {
       message: 'Successfully Signed-Up User',
-      createdUser: savedUser,
+      createdUser: {
+        ...savedUser,
+        dateOfBirth: user.dateOfBirth.toString().split('T')[0], // Devuelve Date a string en formato 'YYYY-MM-DD'
+      },
       token,
     };
   }
@@ -82,7 +86,7 @@ export class AuthService {
     }
 
     //Consultamos en DB por el usuaario mediante su email:
-    const user: UserResponseDto =
+    const user: Users =
       await this.userRepository.getUserByEmailRepository(email);
 
     //Validamos si existe el usuario:

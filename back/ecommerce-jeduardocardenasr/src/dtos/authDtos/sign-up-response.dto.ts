@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Users } from '../../entities/users.entity';
+import { UserResponseDto } from '../usersDtos/user-response.dto';
 
 export class SignUpResponseDto {
   @ApiProperty({
@@ -11,9 +11,9 @@ export class SignUpResponseDto {
 
   @ApiProperty({
     description: 'Object containing the details of the newly created user.',
-    type: Users,
+    type: UserResponseDto,
   })
-  createdUser: Partial<Users>;
+  createdUser: Partial<UserResponseDto>;
 
   @ApiProperty({
     description:

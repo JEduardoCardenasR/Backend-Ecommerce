@@ -4,6 +4,7 @@ import {
   ApiPropertyOptional,
 } from '@nestjs/swagger';
 import {
+  IsDateString,
   IsEmail,
   IsEmpty,
   IsNotEmpty,
@@ -132,4 +133,13 @@ export class CreateUserDto {
   @ApiHideProperty()
   @IsEmpty()
   isAdmin?: boolean;
+
+  @ApiProperty({
+    description: 'Date of birth (Structure must be FullYear-Month-Day)',
+    example: '2024-03-01',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsDateString()
+  dateOfBirth: string;
 }
