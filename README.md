@@ -151,7 +151,8 @@ SwaggerModule.setup('api', app, SwaggerModule.createDocument(app, openApiConfig)
 Este backend representa un ejemplo sólido de desarrollo orientado a producción, integrando seguridad, documentación, validaciones, modularidad y pruebas. Está diseñado para escalar fácilmente, incorporando características modernas necesarias en cualquier ecommerce profesional.
 
 Capturas:
-![Swagger2](https://github.com/user-attachments/assets/080dd420-4d0d-423d-92f5-bc7bcd1c20b3)
-![Swagger1](https://github.com/user-attachments/assets/85c328b0-cf05-4c8a-8b78-a5ae50c56973)
 ![Swagger](https://github.com/user-attachments/assets/0eec4b14-0258-4c9b-80a0-fa7520018af3)
+![Swagger1](https://github.com/user-attachments/assets/85c328b0-cf05-4c8a-8b78-a5ae50c56973)
+![Swagger2](https://github.com/user-attachments/assets/080dd420-4d0d-423d-92f5-bc7bcd1c20b3)
+
 
